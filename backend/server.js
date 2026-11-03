@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
+const stallRoutes = require('./routes/stallRoutes');
 
 const app = express();
 
@@ -22,3 +23,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
+
+// Stall Routes
+app.use('/api/stalls', stallRoutes);
