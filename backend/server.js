@@ -5,6 +5,7 @@ require('dotenv').config();
 const authRoutes = require('./routes/authRoutes');
 const stallRoutes = require('./routes/stallRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
@@ -30,5 +31,8 @@ app.use('/api/stalls', stallRoutes);
 
 // Event Routes
 app.use('/api/events', eventRoutes);
+
+// Booking Routes
+app.use('/api/bookings', bookingRoutes);
 
 module.exports = app;
