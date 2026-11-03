@@ -6,6 +6,8 @@ const authRoutes = require('./routes/authRoutes');
 const stallRoutes = require('./routes/stallRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+const path = require('path');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 const app = express();
 
@@ -34,5 +36,11 @@ app.use('/api/events', eventRoutes);
 
 // Booking Routes
 app.use('/api/bookings', bookingRoutes);
+
+// Serve uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Payment Routes
+app.use('/api/payments', paymentRoutes);
 
 module.exports = app;
