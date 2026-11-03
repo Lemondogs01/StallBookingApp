@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const stallRoutes = require('./routes/stallRoutes');
+const eventRoutes = require('./routes/eventRoutes');
 
 const app = express();
 
@@ -26,3 +27,8 @@ app.listen(PORT, () => {
 
 // Stall Routes
 app.use('/api/stalls', stallRoutes);
+
+// Event Routes
+app.use('/api/events', eventRoutes);
+
+module.exports = app;
