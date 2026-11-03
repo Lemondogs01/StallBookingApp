@@ -14,7 +14,7 @@ const pool = mysql.createPool({
 // ทดสอบการเชื่อมต่อ
 pool.getConnection()
     .then(connection => {
-        console.log('✅ Connected to MySQL Database successfully!');
+        console.log('💖💖💖 Connected to MySQL Database successfully! 💖💖💖');
         connection.release();
     })
     .catch(err => {
