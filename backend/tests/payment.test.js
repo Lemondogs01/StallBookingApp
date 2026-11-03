@@ -35,21 +35,21 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
 
     beforeAll(async () => {
         process.env.JWT_SECRET = 'test_secret';
-        // จำลอง Vendor ID = 2
         vendorToken = jwt.sign({ id: 2, username: 'vendor_test', role: 'vendor' }, 'test_secret');
         adminToken = jwt.sign({ id: 1, username: 'admin', role: 'admin' }, 'test_secret');
 
-        // ตรวจสอบและสร้างโฟลเดอร์ uploads/slips
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
         }
 
-        // สร้างไฟล์ภาพจำลอง
         fs.writeFileSync(dummyImagePath, 'fake image content');
 
-        // สร้าง Booking เทียมไว้ทดสอบ
+        // เคลียร์ข้อมูลที่อาจตกค้างจากการเทสต์รอบก่อน
+        await pool.query('DELETE FROM bookings WHERE stall_id = 1 AND event_id = 1 AND booking_date = "2099-12-31"');
+
+        // สร้าง Booking เทียมใหม่
         const [result] = await pool.query(
-            'INSERT INTO bookings (vendor_id, stall_id, event_id, booking_date, product_type, status) VALUES (2, 1, 1, "2026-12-05", "Food", "pending")'
+            'INSERT INTO bookings (vendor_id, stall_id, event_id, booking_date, product_type, status) VALUES (2, 1, 1, "2099-12-31", "Food", "pending")'
         );
         testBookingId = result.insertId;
     });
