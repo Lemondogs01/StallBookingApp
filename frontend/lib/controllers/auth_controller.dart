@@ -49,6 +49,36 @@ class AuthController extends ChangeNotifier {
     return false;
   }
 
+  // เพิ่มฟังก์ชัน Register
+  Future<bool> register(String username, String password, String role) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final res = await http.post(
+        Uri.parse('${ApiConfig.baseUrl}/auth/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'username': username,
+          'password': password,
+          'role': role,
+        }),
+      );
+
+      if (res.statusCode == 201 || res.statusCode == 200) {
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Register Error: $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   Future<void> logout() async {
     _user = null;
     _token = null;
