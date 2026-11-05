@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../controllers/auth_controller.dart';
-import 'admin_home_view.dart';
-import 'vendor_home_view.dart';
+import '../theme/app_theme.dart';
 import 'register_view.dart';
+import 'vendor_dashboard_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -17,19 +17,20 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // โทนสีตามดีไซน์ในรูป
-  final Color bgColor = const Color(0xFFF8F7F2);
-  final Color darkGreen = const Color(0xFF2C5E43);
-  final Color lightGreen = const Color(0xFFE5ECD9);
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void _handleLogin() async {
     final username = _usernameController.text.trim();
     final password = _passwordController.text;
 
     if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('กรุณากรอก Username และ Password')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบ')));
       return;
     }
 
@@ -39,27 +40,10 @@ class _LoginViewState extends State<LoginView> {
     if (!mounted) return;
 
     if (success) {
-      final user = authController.user;
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('เข้าสู่ระบบสำเร็จ!'),
-          backgroundColor: Colors.green,
-        ),
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const VendorDashboardView()),
       );
-
-      // นำทางตาม Role จาก UserModel
-      if (user?.role == 'admin') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const AdminHomeView()),
-        );
-      } else {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const VendorHomeView()),
-        );
-      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -75,25 +59,34 @@ class _LoginViewState extends State<LoginView> {
     final authController = Provider.of<AuthController>(context);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: AppTheme.bgColor,
       body: Stack(
         children: [
-          // พื้นหลังวงกลมสีเขียว
+          // Background Circles
           Positioned(
             top: 150,
-            left: -80,
-            child: CircleAvatar(radius: 100, backgroundColor: darkGreen),
+            left: -50,
+            child: CircleAvatar(
+              radius: 65,
+              backgroundColor: AppTheme.darkGreen,
+            ),
           ),
           Positioned(
-            top: -50,
-            right: -50,
-            child: CircleAvatar(radius: 120, backgroundColor: darkGreen),
+            top: -20,
+            right: -60,
+            child: CircleAvatar(
+              radius: 100,
+              backgroundColor: AppTheme.darkGreen,
+            ),
           ),
           Positioned(
-            bottom: -150,
-            left: -100,
-            right: 0,
-            child: CircleAvatar(radius: 300, backgroundColor: darkGreen),
+            bottom: -160,
+            left: -30,
+            right: -30,
+            child: CircleAvatar(
+              radius: 260,
+              backgroundColor: AppTheme.darkGreen,
+            ),
           ),
 
           SafeArea(
@@ -103,28 +96,28 @@ class _LoginViewState extends State<LoginView> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // โลโก้ MFUgrowtogether
+                    // 1. Logo Circle (โลโก้ วงกลมสีเขียวเข้ม)
                     Container(
-                      width: 180,
-                      height: 180,
+                      width: 230,
+                      height: 230,
                       decoration: BoxDecoration(
-                        color: darkGreen,
+                        color: AppTheme.darkGreen,
                         shape: BoxShape.circle,
                       ),
-                      child: const Column(
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.storefront_outlined,
-                            size: 60,
+                            size: 80,
                             color: Colors.white,
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: 8),
                           Text(
                             'MFUgrowtogether',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -133,54 +126,93 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     const SizedBox(height: 40),
 
-                    // ฟอร์มกรอก Input
+                    // 2. Form Container (กล่องสีเขียวอ่อนใส่ Input)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 32,
+                        horizontal: 20,
+                        vertical: 24,
                       ),
                       decoration: BoxDecoration(
-                        color: lightGreen,
+                        color: AppTheme.lightGreen,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Column(
                         children: [
-                          TextField(
-                            controller: _usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'username or email',
-                              hintStyle: TextStyle(
-                                color: darkGreen,
+                          // Username / Email Field
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: TextField(
+                              controller: _usernameController,
+                              style: TextStyle(
+                                color: AppTheme.darkGreen,
                                 fontWeight: FontWeight.bold,
                               ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: darkGreen),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: darkGreen,
-                                  width: 2,
+                              decoration: InputDecoration(
+                                hintText: 'username or email',
+                                hintStyle: TextStyle(
+                                  color: AppTheme.darkGreen,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                border: InputBorder.none,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppTheme.darkGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppTheme.darkGreen,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          TextField(
-                            controller: _passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'password',
-                              hintStyle: TextStyle(
-                                color: darkGreen,
+                          const SizedBox(height: 16),
+
+                          // Password Field
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: TextField(
+                              controller: _passwordController,
+                              obscureText: true,
+                              style: TextStyle(
+                                color: AppTheme.darkGreen,
                                 fontWeight: FontWeight.bold,
                               ),
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: darkGreen),
-                              ),
-                              focusedBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: darkGreen,
-                                  width: 2,
+                              decoration: InputDecoration(
+                                hintText: 'password',
+                                hintStyle: TextStyle(
+                                  color: AppTheme.darkGreen,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                border: InputBorder.none,
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppTheme.darkGreen,
+                                    width: 1.5,
+                                  ),
+                                ),
+                                focusedBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: AppTheme.darkGreen,
+                                    width: 2,
+                                  ),
                                 ),
                               ),
                             ),
@@ -188,64 +220,68 @@ class _LoginViewState extends State<LoginView> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 36),
 
-                    // ปุ่ม Login
+                    // 3. Login Button
                     SizedBox(
-                      width: 200,
-                      height: 60,
+                      width: 180,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: authController.isLoading
                             ? null
                             : _handleLogin,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: lightGreen,
-                          elevation: 5,
-                          shadowColor: Colors.black45,
+                          backgroundColor: AppTheme.lightGreen,
+                          elevation: 6,
+                          shadowColor: Colors.black38,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
                         child: authController.isLoading
-                            ? CircularProgressIndicator(color: darkGreen)
-                            : FittedBox(
-                                fit: BoxFit.scaleDown,
-                                child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                    color: darkGreen,
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                            ? CircularProgressIndicator(
+                                color: AppTheme.darkGreen,
+                              )
+                            : Text(
+                                'Login',
+                                style: TextStyle(
+                                  color: AppTheme.darkGreen,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
+                    // "or" Divider
                     const Text(
                       'or',
                       style: TextStyle(
                         color: Colors.white,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
+
+                    // Sign Up Link
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const RegisterView(),
+                            builder: (context) => const RegisterView(),
                           ),
                         );
                       },
                       child: const Text(
-                        "don't you have an account yet?",
+                        "don't u have a account yet?",
                         style: TextStyle(
                           color: Colors.white,
                           decoration: TextDecoration.underline,
                           decorationColor: Colors.white,
+                          fontSize: 13,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

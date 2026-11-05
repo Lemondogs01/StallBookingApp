@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'controllers/auth_controller.dart';
-import 'controllers/booking_controller.dart';
+import 'theme/app_theme.dart';
 import 'views/login_view.dart';
-import 'theme.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => AuthController(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,17 +19,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => AuthController()),
-        ChangeNotifierProvider(create: (_) => BookingController()),
-      ],
-      child: MaterialApp(
-        title: 'MFU Stall Booking',
-        theme: AppTheme.lightTheme,
-        debugShowCheckedModeBanner: false,
-        home: const LoginView(),
-      ),
+    return MaterialApp(
+      title: 'Vendor App',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const LoginView(),
     );
   }
 }
