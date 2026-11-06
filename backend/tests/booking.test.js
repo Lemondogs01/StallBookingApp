@@ -24,10 +24,30 @@ describe('Booking Controller Unit Tests', () => {
     let vendorToken;
     let adminToken;
     let testBookingId;
+    let testEventId;
+    let testStallId;
+    let testVendorId;
 
-    beforeAll(() => {
+    beforeAll(async () => {
         process.env.JWT_SECRET = 'test_secret';
-        vendorToken = jwt.sign({ id: 2, username: 'vendor_test', role: 'vendor' }, 'test_secret');
+        const suffix = Date.now();
+        const [vendorResult] = await pool.query(
+            'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+            [`booking_test_${suffix}`, 'test-hash', 'vendor']
+        );
+        testVendorId = vendorResult.insertId;
+        const [eventResult] = await pool.query(
+            'INSERT INTO events (name, price, stalls_left, start_date, end_date) VALUES (?, ?, ?, ?, ?)',
+            [`Booking test ${suffix}`, 150, 1, '2099-12-30', '2099-12-31']
+        );
+        testEventId = eventResult.insertId;
+        const [stallResult] = await pool.query(
+            'INSERT INTO stalls (code, zone, size, price_per_day, status) VALUES (?, ?, ?, ?, ?)',
+            [`B${suffix}`, 'Test', '2x2', 150, 'available']
+        );
+        testStallId = stallResult.insertId;
+
+        vendorToken = jwt.sign({ id: testVendorId, username: `booking_test_${suffix}`, role: 'vendor' }, 'test_secret');
         adminToken = jwt.sign({ id: 1, username: 'admin', role: 'admin' }, 'test_secret');
     });
 
@@ -35,6 +55,9 @@ describe('Booking Controller Unit Tests', () => {
         if (testBookingId) {
             await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
         }
+        if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+        if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+        if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
         await pool.end();
     });
 
@@ -43,8 +66,8 @@ describe('Booking Controller Unit Tests', () => {
             .post('/api/bookings')
             .set('Authorization', `Bearer ${vendorToken}`)
             .send({
-                stall_id: 1,
-                event_id: 1,
+                stall_id: testStallId,
+                event_id: testEventId,
                 booking_date: '2026-12-01',
                 product_type: 'Clothing'
             });

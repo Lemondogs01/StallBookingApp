@@ -10,6 +10,7 @@ app.use('/api/auth', authRoutes);
 describe('Auth Controller Unit Tests', () => {
     // ปิด DB Pool Connection หลังทดสอบเสร็จทั้งหมด
     afterAll(async () => {
+        await pool.query('DELETE FROM users WHERE username = ?', [testUser.username]);
         await pool.end();
     });
 
@@ -25,7 +26,7 @@ describe('Auth Controller Unit Tests', () => {
             .send(testUser);
 
         expect(res.statusCode).toEqual(201);
-        expect(res.body).toHaveProperty('message', 'User registered successfully');
+        expect(res.body).toHaveProperty('message', 'Vendor registered successfully');
         expect(res.body).toHaveProperty('userId');
     });
 

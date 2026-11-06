@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-import '../controllers/auth_controller.dart';
-import '../models/event_model.dart';
-import '../theme/app_theme.dart';
+import '../../controllers/auth_controller.dart';
+import '../../models/event_model.dart';
+import '../../config/theme/app_theme.dart';
 import 'event_detail_view.dart';
 
 class VendorDashboardView extends StatefulWidget {

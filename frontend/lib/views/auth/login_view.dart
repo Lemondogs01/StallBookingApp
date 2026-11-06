@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../controllers/auth_controller.dart';
-import '../theme/app_theme.dart';
+import '../../controllers/auth_controller.dart';
+import '../../config/theme/app_theme.dart';
 import 'register_view.dart';
-import 'vendor_dashboard_view.dart';
+import '../vendor/vendor_dashboard_view.dart';
+import '../admin/admin_dashboard_view.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -29,8 +30,9 @@ class _LoginViewState extends State<LoginView> {
     final password = _passwordController.text;
 
     if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('กรุณากรอกข้อมูลให้ครบ')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('กรุณากรอก Username และ Password')),
+      );
       return;
     }
 
@@ -40,10 +42,24 @@ class _LoginViewState extends State<LoginView> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const VendorDashboardView()),
-      );
+      final user = authController.user;
+
+      // เช็คสิทธิ์และแยกหน้าตาม role
+      if (user?.role == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const AdminDashboardView(),
+          ), // นำทางไป Admin Dashboard
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const VendorDashboardView(),
+          ), // นำทางไป Vendor View
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

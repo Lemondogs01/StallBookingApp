@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'controllers/admin_controller.dart';
 import 'controllers/auth_controller.dart';
-import 'theme/app_theme.dart';
-import 'views/login_view.dart';
+import 'config/theme/app_theme.dart';
+import 'views/auth/login_view.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AuthController(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => AdminController()),
+      ],
       child: const MyApp(),
     ),
   );

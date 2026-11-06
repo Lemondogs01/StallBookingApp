@@ -6,14 +6,15 @@ const multer = require('multer');
 require('dotenv').config();
 
 // 1. Import Database Connection Pool
-const db = require('./config/db'); // Ensure this points to your database config file
+const db = require('./config/db');
 
 const authRoutes = require('./routes/authRoutes');
 const stallRoutes = require('./routes/stallRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-
+const adminRoutes = require('./routes/adminRoutes');
+const { authenticateToken } = require('./middlewares/authMiddleware');
 const app = express();
 
 // Middlewares
@@ -47,6 +48,7 @@ app.use('/api/stalls', stallRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Test Route
 app.get('/', (req, res) => {
@@ -67,7 +69,13 @@ app.get('/api/events', async (req, res) => {
 // POST /api/admin/events (Create event with image upload)
 app.post('/api/admin/events', upload.single('image'), async (req, res) => {
     try {
-        const { title, description, location, price, stalls_left, start_date, end_date } = req.body;
+        const { name, title, description, location, price, stalls_left, start_date, end_date } = req.body;
+
+        const eventName = name || title;
+
+        if (!eventName) {
+            return res.status(400).json({ message: 'กรุณากรอกชื่อ Event' });
+        }
 
         if (!req.file) {
             return res.status(400).json({ message: 'กรุณาแนบไฟล์รูปภาพ' });
@@ -82,7 +90,7 @@ app.post('/api/admin/events', upload.single('image'), async (req, res) => {
         `;
 
         await db.query(sql, [
-            title,
+            eventName,
             description || '',
             location || 'Chiang Rai',
             price || 0,
@@ -106,6 +114,41 @@ app.post('/api/admin/events', upload.single('image'), async (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🐶🐶🐶 Server running on port ${PORT} 🐶🐶🐶`);
+});
+
+// 1. Endpoint ลบ Event
+app.delete('/api/admin/events/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const [result] = await db.query('DELETE FROM events WHERE id = ?', [id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'ไม่พบ Event ที่ต้องการลบ' });
+        }
+
+        res.json({ message: 'Event deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// 3. อัปเดตสถานะ Request (Approve/Reject)
+app.put('/api/admin/requests/:id', authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body; // 'approved' หรือ 'rejected'
+        const [result] = await db.query('UPDATE bookings SET status = ? WHERE id = ?', [status, id]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'ไม่พบรายการจองนี้' });
+        }
+
+        res.json({ message: 'Status updated successfully' });
+    } catch (error) {
+        console.error('Error updating status:', error);
+        res.status(500).json({ message: error.message });
+    }
 });
 
 module.exports = app;

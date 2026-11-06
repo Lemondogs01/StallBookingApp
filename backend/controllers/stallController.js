@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 // ดึงรายการแผงค้าทั้งหมด (รองรับ Filter ตาม zone และ status)
 exports.getAllStalls = async (req, res) => {
-    const { zone, status } = req.query;
+    const { zone, status, event_id: eventId } = req.query;
     try {
         let query = 'SELECT * FROM stalls WHERE 1=1';
         const params = [];
@@ -14,6 +14,10 @@ exports.getAllStalls = async (req, res) => {
         if (status) {
             query += ' AND status = ?';
             params.push(status);
+        }
+        if (eventId) {
+            query += ' AND event_id = ?';
+            params.push(eventId);
         }
 
         const [stalls] = await pool.query(query, params);

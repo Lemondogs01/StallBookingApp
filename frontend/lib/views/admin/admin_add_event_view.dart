@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-import '../theme/app_theme.dart';
+import '../../controllers/admin_controller.dart';
+import '../../controllers/auth_controller.dart';
+import '../../config/theme/app_theme.dart';
 
 class AdminAddEventView extends StatefulWidget {
   const AdminAddEventView({super.key});
@@ -28,7 +30,7 @@ class _AdminAddEventViewState extends State<AdminAddEventView> {
   Future<void> _pickImage() async {
     final XFile? pickedFile = await _picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80, // บีบอัดรูปเล็กน้อยเพื่อการส่งข้อมูลที่เร็วขึ้น
+      imageQuality: 80,
     );
     if (pickedFile != null) {
       setState(() {
@@ -37,70 +39,75 @@ class _AdminAddEventViewState extends State<AdminAddEventView> {
     }
   }
 
-  // ฟังก์ชันส่งข้อมูลและไฟล์รูปภาพไป Backend (Multipart Request)
+  // ฟังก์ชันส่งข้อมูลและไฟล์รูปภาพไป Backend
   Future<void> _submitEvent() async {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedImage == null) {
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    // 1. ดึง token และ controller จาก Provider
+    final token = Provider.of<AuthController>(context, listen: false).token;
+    final adminController = Provider.of<AdminController>(
+      context,
+      listen: false,
+    );
+
+    if (token == null) {
+      setState(() {
+        _isLoading = false;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('กรุณาเลือกรูปภาพ Event'),
-          backgroundColor: Colors.orange,
+          content: Text('กรุณาล็อกอินใหม่อีกครั้ง'),
+          backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    setState(() => _isLoading = true);
+    // 2. เรียก API สร้าง Event
+    final success = await adminController.createEvent(
+      token: token,
+      name: _titleController.text.trim(),
+      location: _locationController.text.trim(),
+      price: double.tryParse(_priceController.text) ?? 0.0,
+      stallsLeft: int.tryParse(_stallsController.text) ?? 0,
+      imageFile: _selectedImage,
+    );
 
-    try {
-      // ⚠️ เปลี่ยน IP ตรงนี้ตามสภาพแวดล้อม (Android Emulator: 10.0.2.2 / เครื่องจริง: IP คอมพิวเตอร์)
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse('http://10.0.2.2:5001/api/admin/events'),
-      );
+    // 3. ป้องกัน Unhandled Exception Context unmounted
+    if (!mounted) return;
 
-      // ใส่ Text Fields
-      request.fields['title'] = _titleController.text;
-      request.fields['location'] = _locationController.text;
-      request.fields['price'] = _priceController.text;
-      request.fields['stalls_left'] = _stallsController.text;
+    setState(() {
+      _isLoading = false;
+    });
 
-      // ใส่ไฟล์รูปภาพ
-      request.files.add(
-        await http.MultipartFile.fromPath('image', _selectedImage!.path),
-      );
-
-      var streamedResponse = await request.send();
-      var response = await http.Response.fromStream(streamedResponse);
-
-      if (!mounted) return;
-
-      if (response.statusCode == 201 || response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('เพิ่ม Event สำเร็จ!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.pop(context);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('เกิดข้อผิดพลาด: ${response.body}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } catch (e) {
+    if (success) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('สร้าง Event สำเร็จ!')));
+      Navigator.pop(
+        context,
+        true,
+      ); // ส่งค่า true กลับไปเพื่อสั่ง refresh หน้าเดิม
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('ไม่สามารถเชื่อมต่อ Server ได้: $e'),
+        const SnackBar(
+          content: Text('เกิดข้อผิดพลาดในการสร้าง Event'),
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _locationController.dispose();
+    _priceController.dispose();
+    _stallsController.dispose();
+    super.dispose();
   }
 
   @override

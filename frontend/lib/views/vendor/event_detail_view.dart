@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../models/event_model.dart';
-import '../theme/app_theme.dart';
+import '../../models/event_model.dart';
+import '../../config/theme/app_theme.dart';
 
 class EventDetailView extends StatelessWidget {
   final EventModel event;

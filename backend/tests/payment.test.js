@@ -29,13 +29,22 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
     let adminToken;
     let testBookingId;
     let testPaymentId;
+    let testEventId;
+    let testStallId;
+    let testVendorId;
     let uploadedSlipPath;
     const dummyImagePath = path.join(__dirname, 'dummy_slip.jpg');
     const uploadsDir = path.join(__dirname, '../uploads/slips');
 
     beforeAll(async () => {
         process.env.JWT_SECRET = 'test_secret';
-        vendorToken = jwt.sign({ id: 2, username: 'vendor_test', role: 'vendor' }, 'test_secret');
+        const suffix = Date.now();
+        const [vendorResult] = await pool.query(
+            'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+            [`payment_test_${suffix}`, 'test-hash', 'vendor']
+        );
+        testVendorId = vendorResult.insertId;
+        vendorToken = jwt.sign({ id: testVendorId, username: `payment_test_${suffix}`, role: 'vendor' }, 'test_secret');
         adminToken = jwt.sign({ id: 1, username: 'admin', role: 'admin' }, 'test_secret');
 
         if (!fs.existsSync(uploadsDir)) {
@@ -44,12 +53,21 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
 
         fs.writeFileSync(dummyImagePath, 'fake image content');
 
-        // เคลียร์ข้อมูลที่อาจตกค้างจากการเทสต์รอบก่อน
-        await pool.query('DELETE FROM bookings WHERE stall_id = 1 AND event_id = 1 AND booking_date = "2099-12-31"');
+        const [eventResult] = await pool.query(
+            'INSERT INTO events (name, price, stalls_left, start_date, end_date) VALUES (?, ?, ?, ?, ?)',
+            [`Payment test ${suffix}`, 500, 1, '2099-12-30', '2099-12-31']
+        );
+        testEventId = eventResult.insertId;
+        const [stallResult] = await pool.query(
+            'INSERT INTO stalls (code, zone, size, price_per_day, status) VALUES (?, ?, ?, ?, ?)',
+            [`P${suffix}`, 'Test', '2x2', 500, 'available']
+        );
+        testStallId = stallResult.insertId;
 
         // สร้าง Booking เทียมใหม่
         const [result] = await pool.query(
-            'INSERT INTO bookings (vendor_id, stall_id, event_id, booking_date, product_type, status) VALUES (2, 1, 1, "2099-12-31", "Food", "pending")'
+            'INSERT INTO bookings (vendor_id, stall_id, event_id, booking_date, product_type, status) VALUES (?, ?, ?, "2099-12-31", "Food", "pending")',
+            [testVendorId, testStallId, testEventId]
         );
         testBookingId = result.insertId;
     });
@@ -62,6 +80,9 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
         if (testBookingId) {
             await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
         }
+        if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+        if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+        if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
         if (fs.existsSync(dummyImagePath)) {
             fs.unlinkSync(dummyImagePath);
         }
@@ -81,7 +102,7 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
 
         expect(res.statusCode).toEqual(201);
         expect(res.body).toHaveProperty('paymentId');
-        expect(res.body.slipUrl).toContain('slip_vendor_2_'); // ตรวจสอบว่ามี vendor_2 ในชื่อไฟล์
+        expect(res.body.slipUrl).toContain(`slip_vendor_${testVendorId}_`);
 
         testPaymentId = res.body.paymentId;
         uploadedSlipPath = path.join(__dirname, '..', res.body.slipUrl);

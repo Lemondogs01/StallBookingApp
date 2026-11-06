@@ -17,6 +17,13 @@ class AuthController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isAuthenticated => _token != null;
 
+  // ✅ ฟังก์ชันนี้ต้องอยู่ "ภายใน" คลาส AuthController
+  Future<void> loadTokenFromStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    _token = prefs.getString('jwt_token');
+    notifyListeners();
+  }
+
   Future<bool> login(String username, String password) async {
     _isLoading = true;
     notifyListeners();
