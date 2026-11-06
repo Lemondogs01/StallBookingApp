@@ -52,13 +52,22 @@ describe('Booking Controller Unit Tests', () => {
     });
 
     afterAll(async () => {
-        if (testBookingId) {
-            await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
+        try {
+            if (testBookingId) {
+                await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
+            }
+            if (testVendorId && testStallId && testEventId) {
+                await pool.query(
+                    'DELETE FROM bookings WHERE vendor_id = ? AND stall_id = ? AND event_id = ?',
+                    [testVendorId, testStallId, testEventId]
+                );
+            }
+            if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+            if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+            if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
+        } finally {
+            await pool.end();
         }
-        if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
-        if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
-        if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
-        await pool.end();
     });
 
     test('POST /api/bookings - Vendor ควรส่งคำขอจองแผงได้ (201)', async () => {

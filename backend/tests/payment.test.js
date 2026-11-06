@@ -73,23 +73,35 @@ describe('Payment Module Unit Tests (Vendor Slip Filename)', () => {
     });
 
     afterAll(async () => {
-        // ล้างข้อมูลการชำระเงินและไฟล์สลิปที่อัปโหลดจริง
-        if (testPaymentId) {
-            await pool.query('DELETE FROM payments WHERE id = ?', [testPaymentId]);
+        try {
+            // Clean by fixture relationships as well as IDs in case a test failed before recording a response ID.
+            if (testBookingId) {
+                await pool.query('DELETE FROM payments WHERE booking_id = ?', [testBookingId]);
+                await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
+            }
+            if (testVendorId && testStallId && testEventId) {
+                await pool.query(
+                    'DELETE p FROM payments p JOIN bookings b ON p.booking_id = b.id WHERE b.vendor_id = ? AND b.stall_id = ? AND b.event_id = ?',
+                    [testVendorId, testStallId, testEventId]
+                );
+                await pool.query(
+                    'DELETE FROM bookings WHERE vendor_id = ? AND stall_id = ? AND event_id = ?',
+                    [testVendorId, testStallId, testEventId]
+                );
+            }
+            if (testPaymentId) await pool.query('DELETE FROM payments WHERE id = ?', [testPaymentId]);
+            if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+            if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+            if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
+        } finally {
+            if (fs.existsSync(dummyImagePath)) {
+                fs.unlinkSync(dummyImagePath);
+            }
+            if (uploadedSlipPath && fs.existsSync(uploadedSlipPath)) {
+                fs.unlinkSync(uploadedSlipPath);
+            }
+            await pool.end();
         }
-        if (testBookingId) {
-            await pool.query('DELETE FROM bookings WHERE id = ?', [testBookingId]);
-        }
-        if (testStallId) await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
-        if (testEventId) await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
-        if (testVendorId) await pool.query('DELETE FROM users WHERE id = ?', [testVendorId]);
-        if (fs.existsSync(dummyImagePath)) {
-            fs.unlinkSync(dummyImagePath);
-        }
-        if (uploadedSlipPath && fs.existsSync(uploadedSlipPath)) {
-            fs.unlinkSync(uploadedSlipPath);
-        }
-        await pool.end();
     });
 
     test('POST /api/payments/upload - Vendor ควรแนบสลิปและได้ชื่อไฟล์ที่มี vendor_id ฝังอยู่ (201)', async () => {

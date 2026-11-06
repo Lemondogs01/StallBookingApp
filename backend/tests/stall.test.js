@@ -24,6 +24,7 @@ app.use('/api/stalls', (req, res, next) => {
 describe('Stall Controller Unit Tests', () => {
     let adminToken;
     let testStallId;
+    const testStallCode = `A99_${Date.now()}`;
 
     beforeAll(() => {
         process.env.JWT_SECRET = 'test_secret';
@@ -32,10 +33,15 @@ describe('Stall Controller Unit Tests', () => {
     });
 
     afterAll(async () => {
-        if (testStallId) {
-            await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+        try {
+            // Match the unique test code too, so a failed POST assertion cannot leave a row behind.
+            await pool.query('DELETE FROM stalls WHERE code = ?', [testStallCode]);
+            if (testStallId) {
+                await pool.query('DELETE FROM stalls WHERE id = ?', [testStallId]);
+            }
+        } finally {
+            await pool.end();
         }
-        await pool.end();
     });
 
     test('POST /api/stalls - Admin ควรสร้างแผงค้าใหม่ได้ (201)', async () => {
@@ -43,7 +49,7 @@ describe('Stall Controller Unit Tests', () => {
             .post('/api/stalls')
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
-                code: 'A99',
+                code: testStallCode,
                 zone: 'Food',
                 size: '2x2',
                 price_per_day: 150.00

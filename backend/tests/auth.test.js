@@ -10,8 +10,11 @@ app.use('/api/auth', authRoutes);
 describe('Auth Controller Unit Tests', () => {
     // ปิด DB Pool Connection หลังทดสอบเสร็จทั้งหมด
     afterAll(async () => {
-        await pool.query('DELETE FROM users WHERE username = ?', [testUser.username]);
-        await pool.end();
+        try {
+            await pool.query('DELETE FROM users WHERE username = ?', [testUser.username]);
+        } finally {
+            await pool.end();
+        }
     });
 
     const testUser = {

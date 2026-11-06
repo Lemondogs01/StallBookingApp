@@ -23,6 +23,7 @@ app.use('/api/events', (req, res, next) => {
 describe('Event Controller Unit Tests', () => {
     let adminToken;
     let testEventId;
+    const testEventName = `MFU Night Market ${Date.now()}`;
 
     beforeAll(() => {
         process.env.JWT_SECRET = 'test_secret';
@@ -30,10 +31,15 @@ describe('Event Controller Unit Tests', () => {
     });
 
     afterAll(async () => {
-        if (testEventId) {
-            await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+        try {
+            // Use the test event's unique name as a fallback if creation succeeded but the test failed early.
+            await pool.query('DELETE FROM events WHERE name = ?', [testEventName]);
+            if (testEventId) {
+                await pool.query('DELETE FROM events WHERE id = ?', [testEventId]);
+            }
+        } finally {
+            await pool.end();
         }
-        await pool.end();
     });
 
     test('POST /api/events - Admin ควรสร้าง Event ใหม่ได้ (201)', async () => {
@@ -41,7 +47,7 @@ describe('Event Controller Unit Tests', () => {
             .post('/api/events')
             .set('Authorization', `Bearer ${adminToken}`)
             .send({
-                name: 'MFU Night Market',
+                name: testEventName,
                 description: 'ตลาดนัดยามเย็น',
                 start_date: '2026-12-01',
                 end_date: '2026-12-03'
