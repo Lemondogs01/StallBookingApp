@@ -19,6 +19,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _phoneController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -104,7 +105,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _passwordController,
                           'Password',
                           Icons.lock_outline,
-                          obscureText: true,
                           helperText: 'Use 8 to 128 characters.',
                         ),
                         if (auth.errorMessage != null) ...[
@@ -145,20 +145,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
     String label,
     IconData icon, {
     TextInputType? keyboardType,
-    bool obscureText = false,
     String? helperText,
   }) {
+    final isPassword = identical(controller, _passwordController);
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 13),
       child: TextFormField(
         controller: controller,
         keyboardType: keyboardType,
-        obscureText: obscureText,
+        obscureText: isPassword && _obscurePassword,
         maxLength: identical(controller, _passwordController) ? 128 : null,
         decoration: InputDecoration(
           labelText: label,
           helperText: helperText,
           prefixIcon: Icon(icon),
+          suffixIcon: isPassword
+              ? IconButton(
+                  tooltip: _obscurePassword
+                      ? 'Show password'
+                      : 'Hide password',
+                  onPressed: () => setState(
+                    () => _obscurePassword = !_obscurePassword,
+                  ),
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                )
+              : null,
         ),
         validator: (value) {
           final input = value?.trim() ?? '';
