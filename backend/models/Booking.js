@@ -187,14 +187,16 @@ class Booking {
       [formatDate(firstMonth), formatDate(nextMonth)]
     );
 
-    const firstDay = new Date(Date.UTC(year, monthIndex, day - 6));
+    // Keep the selected day in the center of the seven-day dashboard trend.
+    const firstDay = new Date(Date.UTC(year, monthIndex, day - 3));
+    const lastDay = new Date(Date.UTC(year, monthIndex, day + 3));
     const [dailyRows] = await db.query(
       `SELECT booking_date AS date, COALESCE(SUM(price), 0) AS revenue
        FROM bookings
        WHERE status = 'approved' AND booking_date BETWEEN ? AND ?
        GROUP BY booking_date
        ORDER BY booking_date ASC`,
-      [formatDate(firstDay), asOfDate]
+      [formatDate(firstDay), formatDate(lastDay)]
     );
 
     const categoryRevenue = { food: 0, fashion: 0, general: 0 };
@@ -206,7 +208,7 @@ class Booking {
       dailyRows.map((row) => [String(row.date).slice(0, 10), Number(row.revenue) || 0])
     );
     const dailyBreakdown = Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(Date.UTC(year, monthIndex, day - 6 + index));
+      const date = new Date(Date.UTC(year, monthIndex, day - 3 + index));
       const dateString = formatDate(date);
       return { date: dateString, revenue: dailyRevenueByDate.get(dateString) || 0 };
     });

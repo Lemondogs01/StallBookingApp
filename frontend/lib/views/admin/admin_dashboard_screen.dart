@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/admin_controller.dart';
+import '../../models/admin_analytics_model.dart';
 import '../../models/booking_model.dart';
 import '../../models/stall_model.dart';
 import '../../services/api_service.dart';
@@ -531,13 +532,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           0,
           (sum, booking) => sum + booking.price,
         );
-        final dailyMaximum =
-            analytics?.dailyBreakdown.fold<double>(
-              0,
-              (maximum, entry) =>
-                  entry.revenue > maximum ? entry.revenue : maximum,
-            ) ??
-            0;
+        final dailyTrend =
+            analytics?.dailyTrendCenteredOn(controller.selectedDate) ??
+            const <DailyRevenue>[];
+        final dailyMaximum = dailyTrend.fold<double>(
+          0,
+          (maximum, entry) => entry.revenue > maximum ? entry.revenue : maximum,
+        );
         if (controller.isLoadingDashboard && analytics == null) {
           return const LoadingPanel();
         }
@@ -608,8 +609,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            for (final entry
-                                in analytics?.dailyBreakdown ?? const [])
+                            for (final entry in dailyTrend)
                               Expanded(
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(8),

@@ -231,6 +231,59 @@ void main() {
     });
 
     test(
+      'centers the selected date and fills missing days in chronological order',
+      () {
+        final selectedDate = DateTime(2026, 11, 10);
+        final analytics = AdminAnalyticsModel.fromJson({
+          'dailyBreakdown': [
+            {'date': '2026-11-13', 'revenue': 130},
+            {'date': '2026-11-10', 'revenue': 100},
+            {'date': '2026-11-07', 'revenue': 70},
+          ],
+        });
+
+        final trend = analytics.dailyTrendCenteredOn(selectedDate);
+
+        expect(trend, hasLength(7));
+        expect(trend.map((day) => day.date.day), [7, 8, 9, 10, 11, 12, 13]);
+        expect(trend[3].date, selectedDate);
+        expect(trend.map((day) => day.revenue), [70, 0, 0, 100, 0, 0, 130]);
+      },
+    );
+
+    test('keeps the selected date centered across a year boundary', () {
+      final selectedDate = DateTime(2026, 1, 1);
+      final analytics = AdminAnalyticsModel.fromJson({
+        'dailyBreakdown': [
+          {'date': '2025-12-29', 'revenue': 20},
+          {'date': '2026-01-01', 'revenue': 50},
+          {'date': '2026-01-04', 'revenue': 40},
+        ],
+      });
+
+      final trend = analytics.dailyTrendCenteredOn(selectedDate);
+
+      expect(
+        trend.map(
+          (day) => '${day.date.year}-${day.date.month}-${day.date.day}',
+        ),
+        [
+          '2025-12-29',
+          '2025-12-30',
+          '2025-12-31',
+          '2026-1-1',
+          '2026-1-2',
+          '2026-1-3',
+          '2026-1-4',
+        ],
+      );
+      expect(trend[3].date, selectedDate);
+      expect(trend[0].revenue, 20);
+      expect(trend[3].revenue, 50);
+      expect(trend[6].revenue, 40);
+    });
+
+    test(
       'uses empty collections and safe numeric defaults for malformed data',
       () {
         final analytics = AdminAnalyticsModel.fromJson({

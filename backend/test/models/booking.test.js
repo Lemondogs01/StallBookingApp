@@ -99,8 +99,9 @@ describe('Booking model queries', () => {
         { month: '2026-11-01', revenue: '300' }
       ],
       [
-        { date: '2026-11-04', revenue: '50' },
-        { date: '2026-11-10', revenue: '250' }
+        { date: '2026-11-07', revenue: '50' },
+        { date: '2026-11-10', revenue: '250' },
+        { date: '2026-11-13', revenue: '300' }
       ]
     ];
 
@@ -119,10 +120,16 @@ describe('Booking model queries', () => {
         });
         assert.equal(analytics.dailyBreakdown.length, 7);
         assert.deepEqual(analytics.dailyBreakdown[0], {
-          date: '2026-11-04', revenue: 50
+          date: '2026-11-07', revenue: 50
         });
         assert.deepEqual(analytics.dailyBreakdown[1], {
-          date: '2026-11-05', revenue: 0
+          date: '2026-11-08', revenue: 0
+        });
+        assert.deepEqual(analytics.dailyBreakdown[3], {
+          date: '2026-11-10', revenue: 250
+        });
+        assert.deepEqual(analytics.dailyBreakdown[6], {
+          date: '2026-11-13', revenue: 300
         });
         assert.equal(analytics.monthlyBreakdown.length, 12);
         assert.deepEqual(analytics.monthlyBreakdown[0], {
@@ -134,7 +141,7 @@ describe('Booking model queries', () => {
 
     assert.equal(calls.length, 5);
     assert.deepEqual(calls[3].params, ['2025-12-01', '2026-12-01']);
-    assert.deepEqual(calls[4].params, ['2026-11-04', '2026-11-10']);
+    assert.deepEqual(calls[4].params, ['2026-11-07', '2026-11-13']);
   });
 });
 

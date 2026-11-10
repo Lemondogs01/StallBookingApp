@@ -13,6 +13,27 @@ class AdminAnalyticsModel {
   final List<DailyRevenue> dailyBreakdown;
   final List<MonthlyRevenue> monthlyBreakdown;
 
+  /// Returns seven chronological days with [center] at index 3.
+  /// Missing days get zero revenue, and incoming rows can arrive in any order.
+  List<DailyRevenue> dailyTrendCenteredOn(DateTime center) {
+    final revenueByDate = {
+      for (final entry in dailyBreakdown) _dateKey(entry.date): entry.revenue,
+    };
+
+    return List.generate(7, (index) {
+      final date = DateTime(center.year, center.month, center.day - 3 + index);
+      return DailyRevenue(
+        date: date,
+        revenue: revenueByDate[_dateKey(date)] ?? 0,
+      );
+    }, growable: false);
+  }
+
+  static String _dateKey(DateTime date) =>
+      '${date.year.toString().padLeft(4, '0')}-'
+      '${date.month.toString().padLeft(2, '0')}-'
+      '${date.day.toString().padLeft(2, '0')}';
+
   factory AdminAnalyticsModel.fromJson(Map<String, dynamic> json) {
     final rawCategories = json['categoryRevenue'];
     final categories = rawCategories is Map
