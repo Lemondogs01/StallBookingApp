@@ -69,7 +69,7 @@ describe('Booking model queries', () => {
     assert.match(calls[4].sql, /WHERE b\.status = 'pending'/);
   });
 
-  it('sets approval audit fields only for approvals', async () => {
+  it('updates the status of a pending booking', async () => {
     const calls = [];
 
     await withOverrides(
@@ -78,14 +78,15 @@ describe('Booking model queries', () => {
         return [{ affectedRows: 1 }];
       }]],
       async () => {
-        assert.equal(await Booking.updatePendingStatus(4, 'approved', 99), true);
-        assert.equal(await Booking.updatePendingStatus(5, 'rejected', 99), true);
+        assert.equal(await Booking.updatePendingStatus(4, 'approved'), true);
+        assert.equal(await Booking.updatePendingStatus(5, 'rejected'), true);
       }
     );
 
-    assert.deepEqual(calls[0].params, ['approved', 99, 'approved', 4]);
-    assert.deepEqual(calls[1].params, ['rejected', null, 'rejected', 5]);
-    assert.match(calls[0].sql, /approved_at = IF/);
+    assert.deepEqual(calls[0].params, ['approved', 4]);
+    assert.deepEqual(calls[1].params, ['rejected', 5]);
+    assert.match(calls[0].sql, /SET status = \?/);
+    assert.doesNotMatch(calls[0].sql, /approved_by_user_id|approved_at/);
   });
 
   it('builds seven daily and twelve monthly revenue points with zero-filled gaps', async () => {

@@ -75,7 +75,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     }
   });
 
-  it('records the approving admin when an eligible booking is approved', async () => {
+  it('approves an eligible booking without storing approval metadata', async () => {
     const response = createResponse();
     let updateArguments;
     const booking = {
@@ -96,7 +96,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
       }, response)
     );
 
-    assert.deepEqual(updateArguments, [4, 'approved', 99]);
+    assert.deepEqual(updateArguments, [4, 'approved']);
     assert.deepEqual(response.body, {
       message: 'Booking has been approved.', bookingId: 4, status: 'approved'
     });

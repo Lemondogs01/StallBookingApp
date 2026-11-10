@@ -99,9 +99,6 @@ void main() {
           'phone': '0800000000',
           'slipUrl': '/uploads/slips/paid.png',
           'paid_amount': '300.00',
-          'approved_by_username': 'admin',
-          'approved_by_name': 'Market Admin',
-          'approved_at': '2099-01-01T10:00:00Z',
         },
       });
 
@@ -111,9 +108,6 @@ void main() {
       expect(stall.booking?.vendorName, 'Vendor Name');
       expect(stall.booking?.vendorPhone, '0800000000');
       expect(stall.booking?.slipUrl, '/uploads/slips/paid.png');
-      expect(stall.booking?.approvedByUsername, 'admin');
-      expect(stall.booking?.approvedByName, 'Market Admin');
-      expect(stall.booking?.approvedAt, DateTime.utc(2099, 1, 1, 10));
     });
   });
 

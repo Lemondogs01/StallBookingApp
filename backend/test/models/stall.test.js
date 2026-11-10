@@ -24,7 +24,7 @@ describe('Stall model', () => {
     assert.deepEqual(calls[1].params, ['A1']);
   });
 
-  it('maps availability and approval details for available, pending, and approved stalls', async () => {
+  it('maps booking details for available, pending, and approved stalls', async () => {
     const rows = [
       { stall_id: 'A1', category: 'food', price: '250.00', booking_id: null },
       {
@@ -35,14 +35,13 @@ describe('Stall model', () => {
       {
         stall_id: 'A3', category: 'general', price: '200.00', booking_id: 13,
         booking_status: 'approved', booking_code: 'BK-20990101-A1B3',
-        booking_price: null, paid_amount: null, approved_by_username: 'admin',
-        approved_by_name: 'Market Admin', approved_at: '2099-01-01 10:00:00'
+        booking_price: null, paid_amount: null
       }
     ];
 
     await withOverrides(
       [[db, 'query', async (sql, params) => {
-        assert.match(sql, /approved_by_user_id/);
+        assert.doesNotMatch(sql, /approved_by_user_id|approved_at/);
         assert.deepEqual(params, ['2099-01-01']);
         return [rows];
       }]],
@@ -56,8 +55,6 @@ describe('Stall model', () => {
         assert.equal(stalls[1].booking.paidAmount, 300);
         assert.equal(stalls[2].status, 'approved');
         assert.equal(stalls[2].booking.price, null);
-        assert.equal(stalls[2].booking.approvedByUsername, 'admin');
-        assert.equal(stalls[2].booking.approvedByName, 'Market Admin');
       }
     );
   });

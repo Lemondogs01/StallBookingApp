@@ -130,8 +130,6 @@ CREATE TABLE bookings (
     status ENUM('pending', 'approved', 'rejected', 'cancelled') NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    -- [แก้] กันจองซ้ำ: active_slot = 1 เมื่อ pending/approved, NULL เมื่อ rejected/cancelled
-    --       แผงเดียวกัน วันเดียวกัน จึงมีการจองที่ยังใช้งานได้ครั้งเดียว (จองซ้ำได้ error 1062)
     active_slot TINYINT AS (IF(status IN ('pending', 'approved'), 1, NULL)) STORED,
     UNIQUE KEY uq_no_double_booking (stall_id, booking_date, active_slot),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
@@ -141,7 +139,7 @@ CREATE TABLE bookings (
 -- 4. Table: Payments (เก็บสลิปหลักฐานการโอนเงิน)
 CREATE TABLE payments (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    booking_id INT NOT NULL UNIQUE, -- [แก้] 1 การจองแนบสลิปได้ 1 รายการ (ส่งซ้ำได้ error 1062)
+    booking_id INT NOT NULL UNIQUE,
     amount DECIMAL(10,2) NOT NULL,
     slip_url VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -180,7 +178,6 @@ const crypto = require('crypto');
  * รูปแบบ: BK-YYYYMMDD-XXXX (เช่น BK-20261108-A8F2)
  */
 const generateBookingCode = () => {
-    // [แก้] ใช้วันที่ตามเวลาไทย (toISOString เป็น UTC ช่วง 00:00-06:59 จะได้วันของเมื่อวาน)
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' }).replace(/-/g, '');
     const randomHex = crypto.randomBytes(2).toString('hex').toUpperCase(); // 4 ตัวอักษรสุ่ม
     return `BK-${today}-${randomHex}`;
@@ -244,11 +241,9 @@ module.exports = { generateBookingCode };
 ### Vendor Endpoints
 * `GET /api/stalls/status?date=YYYY-MM-DD` — **[Read Stalls]** ดึงสถานะแผง 30 แผงตามวันที่เลือก
 * `POST /api/bookings` — **[Create Booking]** สร้างรายการจองแผงลอย (ใช้ `generateBookingCode()`)
-  * [แก้] ถ้าได้ error 1062 จาก `uq_no_double_booking` ให้ตอบ 409 "แผงนี้ถูกจองแล้วในวันนั้น"
 * `POST /api/payments` — **[Create Payment]** แนบสลิปโอนเงินพร้อม `booking_id`
 * `GET /api/bookings/my` — **[Read Bookings]** ดึงประวัติการจอง + ข้อมูลการชำระเงินของตนเอง
 * `PUT /api/bookings/:id/cancel` — **[Update Booking Status]** ยกเลิกคำขอจอง (กรณีสถานะ pending)
-  * [แก้] ต้องเช็กว่าเป็นการจองของผู้ใช้ที่ล็อกอิน (`user_id` จาก JWT) ไม่อย่างนั้นเปลี่ยน `:id` แล้วยกเลิกของคนอื่นได้
 
 ### Admin Endpoints
 * `GET /api/admin/bookings/pending` — **[Read Pending Bookings]** รายการคำขอจองและสลิปที่รอตรวจสอบ

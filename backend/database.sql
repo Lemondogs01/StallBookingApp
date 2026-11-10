@@ -38,17 +38,13 @@ CREATE TABLE bookings (
     booking_date DATE NOT NULL,
     price DECIMAL(10,2) NOT NULL,
     status ENUM('pending', 'approved', 'rejected', 'cancelled') NOT NULL DEFAULT 'pending',
-    approved_by_user_id INT NULL,
-    approved_at DATETIME NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active_slot TINYINT GENERATED ALWAYS AS (
         IF(status IN ('pending', 'approved'), 1, NULL)
     ) STORED,
     UNIQUE KEY uq_no_double_booking (stall_id, booking_date, active_slot),
-    KEY idx_bookings_approved_by_user_id (approved_by_user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (approved_by_user_id) REFERENCES users(id) ON DELETE SET NULL,
     FOREIGN KEY (stall_id) REFERENCES stalls(id) ON DELETE CASCADE
 );
 

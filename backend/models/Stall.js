@@ -22,21 +22,17 @@ class Stall {
         b.booking_code,
         b.booking_date,
         b.price AS booking_price,
-        b.approved_at,
         u.shop_name,
         u.real_name,
         u.phone,
         p.slip_url,
-        p.amount AS paid_amount,
-        approver.username AS approved_by_username,
-        approver.real_name AS approved_by_name
+        p.amount AS paid_amount
       FROM stalls s
       LEFT JOIN bookings b ON s.id = b.stall_id 
         AND b.booking_date = ? 
         AND b.status IN ('pending', 'approved')
       LEFT JOIN users u ON b.user_id = u.id
       LEFT JOIN payments p ON b.id = p.booking_id
-      LEFT JOIN users approver ON b.approved_by_user_id = approver.id
       ORDER BY s.id ASC
     `;
 
@@ -65,10 +61,7 @@ class Stall {
           vendorName: row.real_name,
           vendorPhone: row.phone,
           slipUrl: row.slip_url,
-          paidAmount: row.paid_amount == null ? null : parseFloat(row.paid_amount),
-          approvedByUsername: row.approved_by_username,
-          approvedByName: row.approved_by_name,
-          approvedAt: row.approved_at
+          paidAmount: row.paid_amount == null ? null : parseFloat(row.paid_amount)
         } : null
       };
     });

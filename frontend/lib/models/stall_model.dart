@@ -51,9 +51,6 @@ class StallBookingSummary {
     this.vendorPhone,
     this.slipUrl,
     this.paidAmount,
-    this.approvedByUsername,
-    this.approvedByName,
-    this.approvedAt,
   });
 
   final int? id;
@@ -66,9 +63,6 @@ class StallBookingSummary {
   final String? vendorPhone;
   final String? slipUrl;
   final double? paidAmount;
-  final String? approvedByUsername;
-  final String? approvedByName;
-  final DateTime? approvedAt;
 
   factory StallBookingSummary.fromJson(Map<String, dynamic> json) {
     return StallBookingSummary(
@@ -82,13 +76,6 @@ class StallBookingSummary {
       vendorPhone: _nullableString(json['vendorPhone'] ?? json['phone']),
       slipUrl: json['slipUrl']?.toString(),
       paidAmount: _toNullableDouble(json['paidAmount'] ?? json['paid_amount']),
-      approvedByUsername: _nullableString(
-        json['approvedByUsername'] ?? json['approved_by_username'],
-      ),
-      approvedByName: _nullableString(
-        json['approvedByName'] ?? json['approved_by_name'],
-      ),
-      approvedAt: _toDate(json['approvedAt'] ?? json['approved_at']),
     );
   }
 

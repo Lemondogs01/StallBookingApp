@@ -141,14 +141,12 @@ class Booking {
     }
   }
 
-  static async updatePendingStatus(id, status, approved_by_user_id = null) {
+  static async updatePendingStatus(id, status) {
     const [result] = await db.query(
       `UPDATE bookings
-       SET status = ?,
-           approved_by_user_id = ?,
-           approved_at = IF(? = 'approved', CURRENT_TIMESTAMP, NULL)
+       SET status = ?
        WHERE id = ? AND status = 'pending'`,
-      [status, status === 'approved' ? approved_by_user_id : null, status, id]
+      [status, id]
     );
     return result.affectedRows > 0;
   }

@@ -46,11 +46,7 @@ const verifyBooking = async (req, res) => {
       }
     }
 
-    const updated = await Booking.updatePendingStatus(
-      bookingId,
-      status,
-      req.user.id
-    );
+    const updated = await Booking.updatePendingStatus(bookingId, status);
     if (!updated) {
       return res.status(409).json({ message: 'The booking changed before it could be reviewed. Refresh and try again.' });
     }

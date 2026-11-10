@@ -384,9 +384,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final booking = stall.booking;
     if (booking == null) return;
     final api = context.read<ApiService>();
-    final approvedBy = booking.approvedByName?.isNotEmpty == true
-        ? '${booking.approvedByName} (${booking.approvedByUsername ?? 'admin'})'
-        : booking.approvedByUsername ?? 'Not recorded';
 
     showDialog<void>(
       context: context,
@@ -454,17 +451,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       _BookingInfoRow(
                         label: 'Phone',
                         value: booking.vendorPhone ?? 'Unavailable',
-                      ),
-                      _BookingInfoRow(
-                        label: 'Approved by',
-                        value: approvedBy,
-                        valueColor: AppTheme.green,
-                      ),
-                      _BookingInfoRow(
-                        label: 'Approved at',
-                        value: booking.approvedAt == null
-                            ? 'Not recorded'
-                            : formatDateTime(booking.approvedAt!),
                       ),
                       const Divider(height: 17),
                       Row(
