@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const green = Color(0xFF138B63);
+  static const green = Color.fromARGB(255, 180, 18, 18);
   static const deepGreen = Color(0xFF08734F);
   static const ink = Color(0xFF172B27);
   static const canvas = Color(0xFFF4F7F5);

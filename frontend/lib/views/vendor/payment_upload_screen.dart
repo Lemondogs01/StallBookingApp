@@ -228,21 +228,31 @@ class _PaymentUploadScreenState extends State<PaymentUploadScreen> {
                   border: Border.all(color: const Color(0xFFD7E9E0)),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(
-                      Icons.qr_code_2_rounded,
-                      size: 112,
-                      color: AppTheme.deepGreen,
+                    Image.network(
+                      api.resolveMediaUrl('/uploads/qrcode/qrcode_4264985.png'),
+                      width: 112,
+                      height: 112,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, error, stackTrace) =>
+                          const SizedBox.square(
+                            dimension: 112,
+                            child: Icon(
+                              Icons.qr_code_2,
+                              size: 72,
+                              color: AppTheme.deepGreen,
+                            ),
+                          ),
                     ),
-                    SizedBox(height: 6),
-                    Text(
+                    const SizedBox(height: 6),
+                    const Text(
                       'Pay with PromptPay and upload your slip',
                       style: TextStyle(fontWeight: FontWeight.w700),
                     ),
-                    SizedBox(height: 3),
-                    Text(
-                      'Contact the market administrator for the payment QR code.',
+                    const SizedBox(height: 3),
+                    const Text(
+                      'Contact the market administrator if any problems occur.',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 11, color: AppTheme.muted),
                     ),

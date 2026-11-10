@@ -36,14 +36,14 @@ class _VendorHomeScreenState extends State<VendorHomeScreen> {
       id: 'fashion',
       label: 'Fashion',
       description: 'Clothing, shoes, and bags',
-      emoji: '👕',
+      emoji: '👚',
       tint: Color(0xFFF4ECFF),
     ),
     _CategoryInfo(
       id: 'general',
       label: 'General Goods',
       description: 'Household items, accessories, and lifestyle products',
-      emoji: '🎧',
+      emoji: '🧻',
       tint: Color(0xFFEAF3FF),
     ),
   ];
