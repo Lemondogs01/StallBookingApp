@@ -117,18 +117,18 @@ class Booking {
         'SELECT id FROM payments WHERE booking_id = ? LIMIT 1',
         [id]
       );
-      if (payments.length > 0) {
-        const error = new Error('A payment slip has been submitted. Contact the market administrator to cancel.');
-        error.status = 409;
-        throw error;
-      }
 
-      await connection.query(
+      const [result] = await connection.query(
         "UPDATE bookings SET status = 'cancelled' WHERE id = ? AND status = 'pending'",
         [id]
       );
+      if (result.affectedRows === 0) {
+        const error = new Error('Only pending bookings can be cancelled.');
+        error.status = 409;
+        throw error;
+      }
       await connection.commit();
-      return true;
+      return { hadPaymentSlip: payments.length > 0 };
     } catch (error) {
       try {
         await connection.rollback();

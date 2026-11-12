@@ -243,7 +243,7 @@ module.exports = { generateBookingCode };
 * `POST /api/bookings` — **[Create Booking]** สร้างรายการจองแผงลอย (ใช้ `generateBookingCode()`)
 * `POST /api/payments` — **[Create Payment]** แนบสลิปโอนเงินพร้อม `booking_id`
 * `GET /api/bookings/my` — **[Read Bookings]** ดึงประวัติการจอง + ข้อมูลการชำระเงินของตนเอง
-* `PUT /api/bookings/:id/cancel` — **[Update Booking Status]** ยกเลิกคำขอจอง (กรณีสถานะ pending)
+* `PUT /api/bookings/:id/cancel` — **[Update Booking Status]** เจ้าของ booking ยกเลิกได้เมื่อสถานะเป็น `pending` แม้ส่งสลิปแล้ว; หากมีสลิปให้แสดงคำเตือนว่าระบบไม่คืนเงินอัตโนมัติและต้องติดต่อผู้ดูแลตลาด
 
 ### Admin Endpoints
 * `GET /api/admin/bookings/pending` — **[Read Pending Bookings]** รายการคำขอจองและสลิปที่รอตรวจสอบ

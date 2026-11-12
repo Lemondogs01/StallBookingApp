@@ -31,7 +31,9 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       builder: (context) => AlertDialog(
         title: const Text('Cancel Booking?'),
         content: Text(
-          'Do you want to cancel your booking for stall ${booking.stallId}?',
+          booking.slipUrl != null
+              ? 'A payment slip was submitted for stall ${booking.stallId}. Cancel this pending booking? Cancellation does not automatically refund your payment. Contact the market administrator about a refund.'
+              : 'Do you want to cancel your booking for stall ${booking.stallId}?',
         ),
         actions: [
           TextButton(
@@ -251,32 +253,35 @@ class _BookingCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (booking.status == 'pending' && booking.slipUrl == null) ...[
+            if (booking.status == 'pending') ...[
               const SizedBox(height: 10),
               Wrap(
                 alignment: WrapAlignment.end,
                 spacing: 8,
                 children: [
-                  TextButton.icon(
-                    onPressed: onCancel,
-                    icon: const Icon(Icons.cancel_outlined, size: 17),
-                    label: const Text('Cancel'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: const Color(0xFFB83A4B),
+                  if (booking.slipUrl == null)
+                    FilledButton.tonalIcon(
+                      onPressed: onPay,
+                      icon: const Icon(Icons.upload_file, size: 17),
+                      label: const Text('Upload Slip'),
                     ),
-                  ),
-                  FilledButton.tonalIcon(
-                    onPressed: onPay,
-                    icon: const Icon(Icons.upload_file, size: 17),
-                    label: const Text('Upload Slip'),
-                  ),
                 ],
               ),
-            ] else if (booking.slipUrl != null) ...[
+            ],
+            if (booking.slipUrl != null) ...[
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  if (booking.status == 'pending')
+                    TextButton.icon(
+                      onPressed: onCancel,
+                      icon: const Icon(Icons.cancel_outlined, size: 17),
+                      label: const Text('Cancel'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: const Color(0xFFB83A4B),
+                      ),
+                    ),
                   if (booking.status == 'pending')
                     TextButton.icon(
                       onPressed: onEditSlip,
@@ -289,6 +294,20 @@ class _BookingCard extends StatelessWidget {
                     label: const Text('View Slip'),
                   ),
                 ],
+              ),
+            ],
+            if (booking.status == 'pending' && booking.slipUrl == null) ...[
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: onCancel,
+                  icon: const Icon(Icons.cancel_outlined, size: 17),
+                  label: const Text('Cancel'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: const Color(0xFFB83A4B),
+                  ),
+                ),
               ),
             ],
           ],

@@ -62,8 +62,15 @@ const cancelBooking = async (req, res) => {
       return res.status(400).json({ message: 'A valid booking ID is required.' });
     }
 
-    await Booking.cancelPendingOwned(bookingId, req.user.id);
-    res.json({ message: 'Booking cancelled successfully.' });
+    const result = await Booking.cancelPendingOwned(bookingId, req.user.id);
+    const hadPaymentSlip = result?.hadPaymentSlip === true;
+    res.json({
+      message: 'Booking cancelled successfully.',
+      warning: hadPaymentSlip
+        ? 'A payment slip was submitted. Cancellation does not automatically refund any payment; contact the market administrator about a refund.'
+        : null,
+      hadPaymentSlip
+    });
   } catch (error) {
     if (error.status) {
       return res.status(error.status).json({ message: error.message });
