@@ -38,6 +38,7 @@ async function withConnection(connection, run) {
 }
 
 describe('Booking model queries', () => {
+  // กรณีนี้ทดสอบ «creates bookings and reads booking lists and single records»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates bookings and reads booking lists and single records', async () => {
     const calls = [];
     const row = { id: 4, status: 'pending' };
@@ -69,6 +70,7 @@ describe('Booking model queries', () => {
     assert.match(calls[4].sql, /WHERE b\.status = 'pending'/);
   });
 
+  // กรณีนี้ทดสอบ «updates the status of a pending booking»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('updates the status of a pending booking', async () => {
     const calls = [];
 
@@ -89,6 +91,7 @@ describe('Booking model queries', () => {
     assert.doesNotMatch(calls[0].sql, /approved_by_user_id|approved_at/);
   });
 
+  // กรณีนี้ทดสอบ «builds seven daily and twelve monthly revenue points with zero-filled gaps»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('builds seven daily and twelve monthly revenue points with zero-filled gaps', async () => {
     const calls = [];
     const queryResults = [
@@ -147,6 +150,7 @@ describe('Booking model queries', () => {
 });
 
 describe('Booking.cancelPendingOwned', () => {
+  // กรณีนี้ทดสอบ «cancels an unpaid pending booking and commits»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('cancels an unpaid pending booking and commits', async () => {
     const connection = makeCancellationConnection({
       booking: { user_id: 8, status: 'pending' }
@@ -162,6 +166,7 @@ describe('Booking.cancelPendingOwned', () => {
     assert.match(connection.calls.at(-1).sql, /status = 'cancelled'/);
   });
 
+  // กรณีนี้ทดสอบ «rolls back when booking is missing, owned by someone else, or not pending»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rolls back when booking is missing, owned by someone else, or not pending', async () => {
     const cases = [
       { booking: undefined, userId: 8, statusCode: 404 },
@@ -184,6 +189,7 @@ describe('Booking.cancelPendingOwned', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «releases the connection and keeps the booking error if rollback fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('releases the connection and keeps the booking error if rollback fails', async () => {
     const connection = makeCancellationConnection({ booking: undefined });
     connection.rollback = async () => { throw new Error('rollback failed'); };

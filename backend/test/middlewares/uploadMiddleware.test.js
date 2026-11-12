@@ -35,6 +35,7 @@ function runSingleUpload(request) {
 }
 
 describe('upload middleware', () => {
+  // กรณีนี้ทดสอบ «only creates upload middleware for slips and profiles»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('only creates upload middleware for slips and profiles', () => {
     assert.throws(
       () => createUploadMiddleware('avatars'),
@@ -44,6 +45,7 @@ describe('upload middleware', () => {
     assert.equal(typeof createUploadMiddleware('profiles').single, 'function');
   });
 
+  // กรณีนี้ทดสอบ «accepts a supported image and writes it to the selected folder»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('accepts a supported image and writes it to the selected folder', async () => {
     const request = makeMultipartRequest({
       filename: 'receipt.PNG',
@@ -64,6 +66,7 @@ describe('upload middleware', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «rejects a file when its MIME type or extension is not an image»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects a file when its MIME type or extension is not an image', async () => {
     const request = makeMultipartRequest({
       filename: 'document.pdf',
@@ -78,6 +81,7 @@ describe('upload middleware', () => {
     assert.equal(result.file, undefined);
   });
 
+  // กรณีนี้ทดสอบ «enforces the five-megabyte upload limit»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('enforces the five-megabyte upload limit', async () => {
     const request = makeMultipartRequest({
       filename: 'large.png',

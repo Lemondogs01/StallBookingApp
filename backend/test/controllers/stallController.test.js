@@ -9,6 +9,7 @@ const {
 } = require('../../test-support/controllerHarness');
 
 describe('stallController.getStallsStatus', () => {
+  // กรณีนี้ทดสอบ «rejects an invalid date without querying stalls»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects an invalid date without querying stalls', async () => {
     const response = createResponse();
 
@@ -17,6 +18,7 @@ describe('stallController.getStallsStatus', () => {
     assert.equal(response.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «uses the requested date and returns the stall list»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('uses the requested date and returns the stall list', async () => {
     const response = createResponse();
     const stalls = [{ id: 'A1', status: 'available' }];
@@ -31,6 +33,7 @@ describe('stallController.getStallsStatus', () => {
     assert.deepEqual(response.body, { date: '2099-01-02', stalls });
   });
 
+  // กรณีนี้ทดสอบ «returns a server error when the stall lookup fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error when the stall lookup fails', async () => {
     const response = createResponse();
 

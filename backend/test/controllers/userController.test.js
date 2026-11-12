@@ -56,6 +56,7 @@ async function withFakeUserModel({ findById, updateProfile }, run) {
 }
 
 describe('userController.updateProfile', () => {
+  // กรณีนี้ทดสอบ «removes a new upload when the profile is missing or submitted fields are invalid»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('removes a new upload when the profile is missing or submitted fields are invalid', async () => {
     const invalidBodies = [
       { shop_name: 4 },
@@ -89,6 +90,7 @@ describe('userController.updateProfile', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «removes an upload when the user is missing and rejects an empty update»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('removes an upload when the user is missing and rejects an empty update', async () => {
     const upload = await makeProfileImage();
     const missingUserResponse = makeResponse();
@@ -122,6 +124,7 @@ describe('userController.updateProfile', () => {
     assert.equal(emptyResponse.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «uses the new profile image and removes the old image after saving»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('uses the new profile image and removes the old image after saving', async () => {
     const oldImage = await makeProfileImage();
     const newImage = await makeProfileImage();
@@ -159,6 +162,7 @@ describe('userController.updateProfile', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «keeps the old image and removes the new upload if saving fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('keeps the old image and removes the new upload if saving fails', async () => {
     const oldImage = await makeProfileImage();
     const newImage = await makeProfileImage();
@@ -198,6 +202,7 @@ describe('userController.updateProfile', () => {
 });
 
 describe('userController.getProfile', () => {
+  // กรณีนี้ทดสอบ «returns the current user profile»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns the current user profile', async () => {
     const response = makeResponse();
     const user = { id: 5, username: 'vendor5', role: 'vendor' };
@@ -210,6 +215,7 @@ describe('userController.getProfile', () => {
     assert.equal(response.body, user);
   });
 
+  // กรณีนี้ทดสอบ «returns not found for a deleted user»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns not found for a deleted user', async () => {
     const response = makeResponse();
 
@@ -221,6 +227,7 @@ describe('userController.getProfile', () => {
     assert.equal(response.statusCode, 404);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error when profile lookup fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error when profile lookup fails', async () => {
     const response = makeResponse();
 
@@ -234,6 +241,7 @@ describe('userController.getProfile', () => {
 });
 
 describe('userController.changePassword', () => {
+  // กรณีนี้ทดสอบ «validates required fields and password length»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('validates required fields and password length', async () => {
     for (const { body, expectedStatus } of [
       { body: {}, expectedStatus: 400 },
@@ -245,6 +253,7 @@ describe('userController.changePassword', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «returns not found if the account no longer exists»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns not found if the account no longer exists', async () => {
     const response = makeResponse();
 
@@ -258,6 +267,7 @@ describe('userController.changePassword', () => {
     assert.equal(response.statusCode, 404);
   });
 
+  // กรณีนี้ทดสอบ «rejects a wrong current password and reusing the current password»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects a wrong current password and reusing the current password', async () => {
     const wrongPasswordResponse = makeResponse();
     await withOverrides(
@@ -284,6 +294,7 @@ describe('userController.changePassword', () => {
     assert.equal(samePasswordResponse.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «hashes and saves a different password»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('hashes and saves a different password', async () => {
     const response = makeResponse();
     let savedHash;
@@ -307,6 +318,7 @@ describe('userController.changePassword', () => {
     assert.match(response.body.message, /changed successfully/);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error when password storage fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error when password storage fails', async () => {
     const response = makeResponse();
 

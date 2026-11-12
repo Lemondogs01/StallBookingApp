@@ -5,6 +5,7 @@ const User = require('../../models/User');
 const { withOverrides } = require('../../test-support/controllerHarness');
 
 describe('User model queries', () => {
+  // กรณีนี้ทดสอบ «looks up a user by username, ID, and password hash»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('looks up a user by username, ID, and password hash', async () => {
     const calls = [];
     const row = { id: 3, username: 'vendor3' };
@@ -25,6 +26,7 @@ describe('User model queries', () => {
     assert.deepEqual(calls.map(({ params }) => params), [['vendor3'], [3], [3]]);
   });
 
+  // กรณีนี้ทดสอบ «creates a vendor with the default role and no profile image»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates a vendor with the default role and no profile image', async () => {
     let received;
 
@@ -47,6 +49,7 @@ describe('User model queries', () => {
     ]);
   });
 
+  // กรณีนี้ทดสอบ «updates only provided profile fields and skips an empty update»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('updates only provided profile fields and skips an empty update', async () => {
     const calls = [];
 
@@ -70,6 +73,7 @@ describe('User model queries', () => {
     assert.deepEqual(calls[1].params, ['new-hash', 3]);
   });
 
+  // กรณีนี้ทดสอบ «searches vendor fields only when a query is provided»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('searches vendor fields only when a query is provided', async () => {
     const calls = [];
 

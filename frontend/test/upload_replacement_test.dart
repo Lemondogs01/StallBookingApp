@@ -9,6 +9,7 @@ import 'package:mfu_market_app/services/api_service.dart';
 
 void main() {
   group('upload replacement requests', () {
+    // กรณีนี้ทดสอบ «sends a replacement slip to the booking slip endpoint»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('sends a replacement slip to the booking slip endpoint', () async {
       var requestWasCorrect = false;
       final api = ApiService(
@@ -43,6 +44,7 @@ void main() {
       api.close();
     });
 
+    // กรณีนี้ทดสอบ «uses the newly returned profile image in controller state»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('uses the newly returned profile image in controller state', () async {
       final api = ApiService(
         baseUrl: 'http://localhost:5001/api',
@@ -98,6 +100,7 @@ void main() {
       api.close();
     });
 
+    // กรณีนี้ทดสอบ «rejects an empty or unsupported image before sending a request»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'rejects an empty or unsupported image before sending a request',
       () async {

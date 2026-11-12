@@ -11,12 +11,14 @@ http.Response _jsonResponse(Object body, [int status = 200]) =>
 
 void main() {
   group('ApiService configuration', () {
+    // กรณีนี้ทดสอบ «supports simulator and Android emulator addresses»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('supports simulator and Android emulator addresses', () {
       expect(ApiService.simulatorBaseUrl, 'http://localhost:5001/api/');
       expect(ApiService.androidEmulatorBaseUrl, 'http://10.0.2.2:5001/api/');
       expect(ApiService.formatApiDate(DateTime(2026, 3, 4)), '2026-03-04');
     });
 
+    // กรณีนี้ทดสอบ «selects a base URL for the active platform and normalizes its path»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'selects a base URL for the active platform and normalizes its path',
       () {
@@ -38,6 +40,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «resolves relative media paths and preserves absolute URLs»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('resolves relative media paths and preserves absolute URLs', () {
       final api = ApiService(
         baseUrl: 'http://localhost:5001/api',
@@ -56,6 +59,7 @@ void main() {
     });
   });
 
+  // กรณีนี้ทดสอบ «uses the expected HTTP paths, JSON fields, query values, and auth headers»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'uses the expected HTTP paths, JSON fields, query values, and auth headers',
     () async {
@@ -156,6 +160,7 @@ void main() {
     },
   );
 
+  // กรณีนี้ทดสอบ «sends multipart slip fields and validates approval decisions»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'sends multipart slip fields and validates approval decisions',
     () async {
@@ -193,6 +198,7 @@ void main() {
     },
   );
 
+  // กรณีนี้ทดสอบ «recognizes GIF, WebP, HEIC, HEIF, and safe filename extensions»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'recognizes GIF, WebP, HEIC, HEIF, and safe filename extensions',
     () async {
@@ -251,6 +257,7 @@ void main() {
     },
   );
 
+  // กรณีนี้ทดสอบ «converts HTTP errors to ApiException with the server message»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'converts HTTP errors to ApiException with the server message',
     () async {
@@ -278,12 +285,14 @@ void main() {
     },
   );
 
+  // กรณีนี้ทดสอบ «prints an ApiException with its status and message»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test('prints an ApiException with its status and message', () {
     const error = ApiException(statusCode: 401, message: 'Sign in again.');
 
     expect(error.toString(), 'ApiException(401): Sign in again.');
   });
 
+  // กรณีนี้ทดสอบ «uses a fallback error message when the server sends no message»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'uses a fallback error message when the server sends no message',
     () async {
@@ -306,6 +315,7 @@ void main() {
     },
   );
 
+  // กรณีนี้ทดสอบ «rejects a successful response with the wrong JSON shape»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test('rejects a successful response with the wrong JSON shape', () async {
     final api = ApiService(
       baseUrl: 'http://localhost:5001/api',
@@ -316,6 +326,7 @@ void main() {
     await expectLater(api.getProfile(), throwsFormatException);
   });
 
+  // กรณีนี้ทดสอบ «handles empty or malformed JSON and invalid list entries»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test('handles empty or malformed JSON and invalid list entries', () async {
     final responses = <http.Response>[
       http.Response('', 200),
@@ -336,6 +347,7 @@ void main() {
     await expectLater(api.getMyBookings(), throwsFormatException);
   });
 
+  // กรณีนี้ทดสอบ «rejects an empty or unsupported image without sending a request»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   test(
     'rejects an empty or unsupported image without sending a request',
     () async {

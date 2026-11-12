@@ -11,6 +11,7 @@ const {
 } = require('../../test-support/controllerHarness');
 
 describe('adminController.getPendingBookings and verifyBooking', () => {
+  // จำลองโมเดลคืน booking สถานะ pending หนึ่งรายการ แล้วตรวจว่า controller ส่งรายการนั้นกลับโดยไม่เปลี่ยนข้อมูล
   it('returns pending bookings', async () => {
     const response = createResponse();
     const bookings = [{ id: 4, status: 'pending' }];
@@ -23,6 +24,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     assert.deepEqual(response.body, bookings);
   });
 
+  // ส่ง ID ที่เป็นศูนย์และ status ที่ไม่ใช่ approved/rejected แล้วคาดหวัง HTTP 400 ทั้งสองกรณี
   it('validates booking ID and requested decision', async () => {
     const cases = [
       [{ id: '0' }, { status: 'approved' }],
@@ -36,6 +38,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     }
   });
 
+  // จำลอง booking ที่หาไม่พบและ booking ที่อนุมัติไปแล้ว: คาดหวัง 404 และ 409 ตามลำดับ
   it('rejects missing and already reviewed bookings', async () => {
     for (const { booking, statusCode } of [
       { booking: undefined, statusCode: 404 },
@@ -52,6 +55,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     }
   });
 
+  // ลองอนุมัติโดยไม่มีสลิป และด้วยยอดชำระไม่ตรงราคา: ทั้งคู่ต้องถูกปฏิเสธด้วย 409 พร้อมข้อความสาเหตุ
   it('requires a slip and matching amount before approval', async () => {
     for (const { booking, expectedMessage } of [
       {
@@ -75,6 +79,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     }
   });
 
+  // เมื่อ booking pending มีสลิปและยอดตรงราคา ตรวจว่าอัปเดตเป็น approved และตอบ booking ID/status โดยไม่บันทึก metadata ผู้อนุมัติ
   it('approves an eligible booking without storing approval metadata', async () => {
     const response = createResponse();
     let updateArguments;
@@ -102,6 +107,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
     });
   });
 
+  // ตรวจว่าปฏิเสธ booking pending ได้ และหากการอัปเดตไม่สำเร็จเพราะมีคำขออื่นเปลี่ยนสถานะก่อน ต้องตอบ 409
   it('can reject a pending booking and handles a concurrent update', async () => {
     const rejectedResponse = createResponse();
     const booking = { id: 4, status: 'pending', slip_url: null };
@@ -132,6 +138,7 @@ describe('adminController.getPendingBookings and verifyBooking', () => {
 });
 
 describe('adminController analytics and user management', () => {
+  // วันที่ไม่มีจริงต้องได้ 400; วันที่ถูกต้องต้องถูกส่งเข้าโมเดลและส่ง analytics ที่ได้กลับไป
   it('validates and returns analytics for the requested date', async () => {
     const invalidResponse = createResponse();
     await adminController.getAnalytics({ query: { date: '2026-02-30' } }, invalidResponse);
@@ -148,6 +155,7 @@ describe('adminController analytics and user management', () => {
     assert.deepEqual(response.body, analytics);
   });
 
+  // ส่งคำค้น `tea` จาก query string เข้า User.findAll และตรวจว่ารายชื่อผลลัพธ์ถูกส่งกลับครบ
   it('passes the optional vendor search query to the user model', async () => {
     const response = createResponse();
     const users = [{ id: 7, username: 'vendor7' }];
@@ -162,6 +170,7 @@ describe('adminController analytics and user management', () => {
     assert.deepEqual(response.body, users);
   });
 
+  // ตรวจ ID ไม่ถูกต้องได้ 400, ID ที่ไม่มีผู้ใช้ได้ 404 และบัญชี admin ไม่สามารถถูกรีเซ็ตจากหน้าจัดการ vendor ได้
   it('validates user ID and only resets vendor accounts', async () => {
     const invalidId = createResponse();
     await adminController.resetUserPassword({ params: { id: '0' }, body: {} }, invalidId);
@@ -182,6 +191,7 @@ describe('adminController analytics and user management', () => {
     assert.equal(adminUser.statusCode, 400);
   });
 
+  // รีเซ็ตรหัส vendor ด้วยรหัสที่ส่งมา ตรวจว่า Argon2id รับรหัสนั้นและ hash ที่ได้ถูกบันทึก โดยไม่ส่ง hash กลับในข้อความตอบ
   it('hashes and saves the requested vendor password', async () => {
     const response = createResponse();
     let receivedHash;
@@ -207,6 +217,7 @@ describe('adminController analytics and user management', () => {
     assert.match(response.body.message, /vendor8/);
   });
 
+  // เมื่อไม่ส่ง password ให้ตรวจว่า controller hash ค่าเริ่มต้น `123456` และตอบสำเร็จ
   it('uses the reset command default when no password is provided', async () => {
     const response = createResponse();
     let hashedPassword;
@@ -226,6 +237,7 @@ describe('adminController analytics and user management', () => {
     assert.equal(response.statusCode, 200);
   });
 
+  // เมื่อการค้นหารายการ pending โยน database error ให้ controller ตอบ HTTP 500
   it('returns server errors when admin lookups fail', async () => {
     const response = createResponse();
 
@@ -237,6 +249,7 @@ describe('adminController analytics and user management', () => {
     assert.equal(response.statusCode, 500);
   });
 
+  // จำลอง database error แยกใน analytics, ค้นหาผู้ใช้, ตรวจ booking และรีเซ็ตรหัสผ่าน แล้วตรวจว่าทุก endpoint ตอบ HTTP 500
   it('returns server errors for analytics, user search, verification, and reset failures', async () => {
     const scenarios = [
       {

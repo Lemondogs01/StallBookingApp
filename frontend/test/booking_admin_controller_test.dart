@@ -48,6 +48,7 @@ http.Response _dashboardResponse(http.Request request) {
 
 void main() {
   group('BookingController', () {
+    // กรณีนี้ทดสอบ «loads stalls and history, then normalizes the selected date»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'loads stalls and history, then normalizes the selected date',
       () async {
@@ -70,6 +71,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «creates a booking and refreshes stalls and history»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('creates a booking and refreshes stalls and history', () async {
       var createWasCalled = false;
       final api = testApi((request) async {
@@ -95,6 +97,7 @@ void main() {
       expect(controller.bookings, hasLength(1));
     });
 
+    // กรณีนี้ทดสอบ «reports a malformed booking response and cancellation API errors»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'reports a malformed booking response and cancellation API errors',
       () async {
@@ -133,6 +136,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «does nothing when a booking has no ID and keeps load errors readable»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'does nothing when a booking has no ID and keeps load errors readable',
       () async {
@@ -158,6 +162,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «cancels an identified booking and refreshes the booking lists»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'cancels an identified booking and refreshes the booking lists',
       () async {
@@ -182,6 +187,7 @@ void main() {
   });
 
   group('AdminController', () {
+    // กรณีนี้ทดสอบ «loads dashboard data and updates the selected day»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('loads dashboard data and updates the selected day', () async {
       final requests = <http.Request>[];
       final api = testApi((request) async {
@@ -211,6 +217,7 @@ void main() {
       );
     });
 
+    // กรณีนี้ทดสอบ «sends an approval decision and refreshes the dashboard»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('sends an approval decision and refreshes the dashboard', () async {
       final decisions = <String>[];
       final api = testApi((request) async {
@@ -231,6 +238,7 @@ void main() {
       expect(controller.errorMessage, isNull);
     });
 
+    // กรณีนี้ทดสอบ «does not send a decision for a booking without an ID»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('does not send a decision for a booking without an ID', () async {
       var requests = 0;
       final api = testApi((_) async {
@@ -250,6 +258,7 @@ void main() {
       expect(requests, 0);
     });
 
+    // กรณีนี้ทดสอบ «reports verification and vendor-search errors and ignores users without IDs»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'reports verification and vendor-search errors and ignores users without IDs',
       () async {
@@ -287,6 +296,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «uses the newest user-search result when requests finish out of order»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'uses the newest user-search result when requests finish out of order',
       () async {
@@ -315,6 +325,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «reports dashboard and password-reset API errors»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('reports dashboard and password-reset API errors', () async {
       final api = testApi(
         (request) async => testJsonResponse({

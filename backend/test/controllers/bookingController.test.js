@@ -15,6 +15,7 @@ const validRequest = {
 };
 
 describe('bookingController.createBooking', () => {
+  // กรณีนี้ทดสอบ «requires a stall ID and a real calendar date»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('requires a stall ID and a real calendar date', async () => {
     for (const body of [{}, { stall_id: 'A1', booking_date: '2099-02-30' }]) {
       const response = createResponse();
@@ -23,6 +24,7 @@ describe('bookingController.createBooking', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «does not allow a booking for a past date»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('does not allow a booking for a past date', async () => {
     const response = createResponse();
 
@@ -35,6 +37,7 @@ describe('bookingController.createBooking', () => {
     assert.match(response.body.message, /past date/);
   });
 
+  // กรณีนี้ทดสอบ «returns not found when the requested stall does not exist»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns not found when the requested stall does not exist', async () => {
     const response = createResponse();
 
@@ -46,6 +49,7 @@ describe('bookingController.createBooking', () => {
     assert.equal(response.statusCode, 404);
   });
 
+  // กรณีนี้ทดสอบ «rejects a stall that already has an active booking for that date»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects a stall that already has an active booking for that date', async () => {
     const response = createResponse();
 
@@ -60,6 +64,7 @@ describe('bookingController.createBooking', () => {
     assert.equal(response.statusCode, 409);
   });
 
+  // กรณีนี้ทดสอบ «creates a pending booking at the stall price»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates a pending booking at the stall price', async () => {
     const response = createResponse();
     let createFields;
@@ -84,6 +89,7 @@ describe('bookingController.createBooking', () => {
     assert.equal(response.body.booking, booking);
   });
 
+  // กรณีนี้ทดสอบ «maps a database duplicate booking error to conflict»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('maps a database duplicate booking error to conflict', async () => {
     const response = createResponse();
     const duplicateError = Object.assign(new Error('duplicate'), {
@@ -102,6 +108,7 @@ describe('bookingController.createBooking', () => {
     assert.equal(response.statusCode, 409);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error for an unexpected booking failure»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error for an unexpected booking failure', async () => {
     const response = createResponse();
 
@@ -115,6 +122,7 @@ describe('bookingController.createBooking', () => {
 });
 
 describe('bookingController.getMyBookings and cancelBooking', () => {
+  // กรณีนี้ทดสอบ «returns only the current vendor bookings»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns only the current vendor bookings', async () => {
     const response = createResponse();
     const bookings = [{ id: 15, status: 'pending' }];
@@ -129,6 +137,7 @@ describe('bookingController.getMyBookings and cancelBooking', () => {
     assert.deepEqual(response.body, bookings);
   });
 
+  // กรณีนี้ทดสอบ «returns an error when the bookings query fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns an error when the bookings query fails', async () => {
     const response = createResponse();
 
@@ -140,6 +149,7 @@ describe('bookingController.getMyBookings and cancelBooking', () => {
     assert.equal(response.statusCode, 500);
   });
 
+  // กรณีนี้ทดสอบ «rejects an invalid booking ID before attempting cancellation»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects an invalid booking ID before attempting cancellation', async () => {
     const response = createResponse();
 
@@ -148,6 +158,7 @@ describe('bookingController.getMyBookings and cancelBooking', () => {
     assert.equal(response.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «returns a success response after cancellation»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a success response after cancellation', async () => {
     const response = createResponse();
     let cancellation;
@@ -161,6 +172,7 @@ describe('bookingController.getMyBookings and cancelBooking', () => {
     assert.equal(response.body.message, 'Booking cancelled successfully.');
   });
 
+  // กรณีนี้ทดสอบ «returns the model status and message for a rejected cancellation»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns the model status and message for a rejected cancellation', async () => {
     const response = createResponse();
     const error = Object.assign(new Error('A payment slip has been submitted.'), { status: 409 });
@@ -174,6 +186,7 @@ describe('bookingController.getMyBookings and cancelBooking', () => {
     assert.equal(response.body.message, error.message);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error for an unexpected cancellation failure»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error for an unexpected cancellation failure', async () => {
     const response = createResponse();
 

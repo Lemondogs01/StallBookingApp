@@ -5,6 +5,7 @@ import 'controller_test_support.dart';
 
 void main() {
   group('AuthController', () {
+    // กรณีนี้ทดสอบ «logs in, saves the token, and loads the user»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('logs in, saves the token, and loads the user', () async {
       final storage = MemoryStorage();
       final api = testApi((request) async {
@@ -29,6 +30,7 @@ void main() {
       expect(controller.errorMessage, isNull);
     });
 
+    // กรณีนี้ทดสอบ «returns a readable message when the API rejects login»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('returns a readable message when the API rejects login', () async {
       final api = testApi(
         (_) async =>
@@ -48,6 +50,7 @@ void main() {
       expect(controller.isLoading, isFalse);
     });
 
+    // กรณีนี้ทดสอบ «restores an existing session and clears an expired one»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('restores an existing session and clears an expired one', () async {
       final validStorage = MemoryStorage(token: 'saved-token');
       final validApi = testApi((request) async {
@@ -78,6 +81,7 @@ void main() {
       expect(expiredController.isInitialized, isTrue);
     });
 
+    // กรณีนี้ทดสอบ «registers vendors and does not require an email field»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('registers vendors and does not require an email field', () async {
       final api = testApi((request) async {
         expect(request.url.path, '/api/auth/register');
@@ -102,6 +106,7 @@ void main() {
       expect(controller.user?.role, 'vendor');
     });
 
+    // กรณีนี้ทดสอบ «clears the in-memory session on logout even if secure storage fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'clears the in-memory session on logout even if secure storage fails',
       () async {
@@ -124,6 +129,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «changes a password and reports API errors»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('changes a password and reports API errors', () async {
       var shouldFail = false;
       final api = testApi((request) async {

@@ -54,6 +54,7 @@ afterEach(async () => {
 });
 
 describe('paymentController.createPayment', () => {
+  // กรณีนี้ทดสอบ «validates booking ID and amount, and removes the rejected upload»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('validates booking ID and amount, and removes the rejected upload', async () => {
     const upload = await makeTemporaryFile();
     const response = createResponse();
@@ -69,6 +70,7 @@ describe('paymentController.createPayment', () => {
     await upload.cleanup();
   });
 
+  // กรณีนี้ทดสอบ «requires a slip image»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('requires a slip image', async () => {
     const response = createResponse();
 
@@ -81,6 +83,7 @@ describe('paymentController.createPayment', () => {
     assert.match(response.body.message, /slip image is required/);
   });
 
+  // กรณีนี้ทดสอบ «creates a payment with the server upload path»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates a payment with the server upload path', async () => {
     const upload = await makeTemporaryFile('new-slip.png');
     const response = createResponse();
@@ -112,6 +115,7 @@ describe('paymentController.createPayment', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «removes the upload and returns model validation errors»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('removes the upload and returns model validation errors', async () => {
     const upload = await makeTemporaryFile();
     const response = createResponse();
@@ -129,6 +133,7 @@ describe('paymentController.createPayment', () => {
     await upload.cleanup();
   });
 
+  // กรณีนี้ทดสอบ «maps duplicate payment errors to conflict»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('maps duplicate payment errors to conflict', async () => {
     const upload = await makeTemporaryFile();
     const response = createResponse();
@@ -148,6 +153,7 @@ describe('paymentController.createPayment', () => {
     await upload.cleanup();
   });
 
+  // กรณีนี้ทดสอบ «returns a server error for an unexpected payment failure»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error for an unexpected payment failure', async () => {
     const upload = await makeTemporaryFile();
     const response = createResponse();
@@ -166,6 +172,7 @@ describe('paymentController.createPayment', () => {
 });
 
 describe('paymentController.replacePaymentSlip', () => {
+  // กรณีนี้ทดสอบ «updates the reference, keeps the new file, and removes the previous slip»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('updates the reference, keeps the new file, and removes the previous slip', async () => {
     const oldSlip = await makeStoredSlip();
     const newSlip = await makeTemporaryFile('replacement.png');
@@ -193,6 +200,7 @@ describe('paymentController.replacePaymentSlip', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «removes the new upload when the booking cannot be changed»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('removes the new upload when the booking cannot be changed', async () => {
     const newSlip = await makeTemporaryFile('replacement.png');
     const response = createResponse();
@@ -210,6 +218,7 @@ describe('paymentController.replacePaymentSlip', () => {
     await newSlip.cleanup();
   });
 
+  // กรณีนี้ทดสอบ «rejects an invalid booking ID and requires a new image»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects an invalid booking ID and requires a new image', async () => {
     const upload = await makeTemporaryFile('replacement.png');
     const invalidResponse = createResponse();
@@ -227,6 +236,7 @@ describe('paymentController.replacePaymentSlip', () => {
     assert.equal(missingResponse.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error and cleans the new upload on unexpected failure»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error and cleans the new upload on unexpected failure', async () => {
     const upload = await makeTemporaryFile('replacement.png');
     const response = createResponse();

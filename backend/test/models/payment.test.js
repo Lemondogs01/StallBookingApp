@@ -72,6 +72,7 @@ async function withFakeConnection(connection, run) {
 }
 
 describe('Payment.createForPendingBooking', () => {
+  // กรณีนี้ทดสอบ «creates a payment for the booking price and commits»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates a payment for the booking price and commits', async () => {
     const connection = makeCreationConnection({
       booking: { user_id: 12, price: '250.00', status: 'pending' }
@@ -96,6 +97,7 @@ describe('Payment.createForPendingBooking', () => {
     ]);
   });
 
+  // กรณีนี้ทดสอบ «rejects a missing booking, another vendor, and a non-pending booking»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects a missing booking, another vendor, and a non-pending booking', async () => {
     const cases = [
       { booking: undefined, userId: 12, amount: 250, status: 404 },
@@ -119,6 +121,7 @@ describe('Payment.createForPendingBooking', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «requires an exact-enough amount and prevents duplicate payment records»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('requires an exact-enough amount and prevents duplicate payment records', async () => {
     const amountMismatch = makeCreationConnection({
       booking: { user_id: 12, price: 250, status: 'pending' }
@@ -148,6 +151,7 @@ describe('Payment.createForPendingBooking', () => {
     assert.equal(duplicate.rolledBack, true);
   });
 
+  // กรณีนี้ทดสอบ «preserves the original error if transaction rollback also fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('preserves the original error if transaction rollback also fails', async () => {
     const connection = makeCreationConnection({ booking: undefined });
     connection.rollback = async () => { throw new Error('rollback failed'); };
@@ -169,6 +173,7 @@ describe('Payment.createForPendingBooking', () => {
 });
 
 describe('Payment.replaceSlipForPendingBooking', () => {
+  // กรณีนี้ทดสอบ «updates the existing slip and commits the transaction»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('updates the existing slip and commits the transaction', async () => {
     const connection = makeConnection({
       booking: { user_id: 12, status: 'pending' },
@@ -194,6 +199,7 @@ describe('Payment.replaceSlipForPendingBooking', () => {
     assert.equal(connection.released, true);
   });
 
+  // กรณีนี้ทดสอบ «rejects another vendor and rolls the transaction back»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects another vendor and rolls the transaction back', async () => {
     const connection = makeConnection({
       booking: { user_id: 99, status: 'pending' },
@@ -217,6 +223,7 @@ describe('Payment.replaceSlipForPendingBooking', () => {
     assert.equal(connection.calls.some(({ sql }) => sql.startsWith('UPDATE')), false);
   });
 
+  // กรณีนี้ทดสอบ «does not allow slip changes after a booking is approved»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('does not allow slip changes after a booking is approved', async () => {
     const connection = makeConnection({
       booking: { user_id: 12, status: 'approved' },
@@ -238,6 +245,7 @@ describe('Payment.replaceSlipForPendingBooking', () => {
     assert.equal(connection.calls.some(({ sql }) => sql.startsWith('UPDATE')), false);
   });
 
+  // กรณีนี้ทดสอบ «rejects a missing booking or a booking without an existing slip»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects a missing booking or a booking without an existing slip', async () => {
     const cases = [
       { booking: undefined, payment: undefined, message: 'Booking not found.' },
@@ -265,6 +273,7 @@ describe('Payment.replaceSlipForPendingBooking', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «preserves the original replacement error if rollback fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('preserves the original replacement error if rollback fails', async () => {
     const connection = makeConnection({ booking: undefined, payment: undefined });
     connection.rollback = async () => { throw new Error('rollback failed'); };

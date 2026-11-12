@@ -11,6 +11,7 @@ const {
 } = require('../../test-support/controllerHarness');
 
 describe('authController.register', () => {
+  // กรณีนี้ทดสอบ «rejects missing fields, invalid phone numbers, and short passwords»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects missing fields, invalid phone numbers, and short passwords', async () => {
     const cases = [
       [{ username: 'vendor' }, 'Please provide all required fields.'],
@@ -26,6 +27,7 @@ describe('authController.register', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «rejects fields longer than the database limits»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('rejects fields longer than the database limits', async () => {
     const response = createResponse();
 
@@ -43,6 +45,7 @@ describe('authController.register', () => {
     assert.match(response.body.message, /exceed the allowed length/);
   });
 
+  // กรณีนี้ทดสอบ «does not create an already registered username»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('does not create an already registered username', async () => {
     const response = createResponse();
 
@@ -60,6 +63,7 @@ describe('authController.register', () => {
     assert.equal(response.body.message, 'Username is already taken.');
   });
 
+  // กรณีนี้ทดสอบ «creates a vendor with an Argon2id hash and returns a token»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('creates a vendor with an Argon2id hash and returns a token', async () => {
     const response = createResponse();
     let createdFields;
@@ -92,6 +96,7 @@ describe('authController.register', () => {
     assert.equal(response.body.user, user);
   });
 
+  // กรณีนี้ทดสอบ «returns conflict when the database reports a duplicate username»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns conflict when the database reports a duplicate username', async () => {
     const response = createResponse();
     const duplicateError = Object.assign(new Error('duplicate'), {
@@ -115,6 +120,7 @@ describe('authController.register', () => {
     assert.equal(response.statusCode, 409);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error when registration storage fails unexpectedly»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error when registration storage fails unexpectedly', async () => {
     const response = createResponse();
 
@@ -137,6 +143,7 @@ describe('authController.register', () => {
 });
 
 describe('authController.login', () => {
+  // กรณีนี้ทดสอบ «requires both username and password»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('requires both username and password', async () => {
     const response = createResponse();
 
@@ -145,6 +152,7 @@ describe('authController.login', () => {
     assert.equal(response.statusCode, 400);
   });
 
+  // กรณีนี้ทดสอบ «uses the same error for an unknown username and a wrong password»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('uses the same error for an unknown username and a wrong password', async () => {
     const expectedMessage = 'Invalid username or password.';
 
@@ -162,6 +170,7 @@ describe('authController.login', () => {
     }
   });
 
+  // กรณีนี้ทดสอบ «returns the signed-in user without exposing the password hash»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns the signed-in user without exposing the password hash', async () => {
     const response = createResponse();
     const user = {
@@ -182,6 +191,7 @@ describe('authController.login', () => {
     assert.equal('password_hash' in response.body.user, false);
   });
 
+  // กรณีนี้ทดสอบ «returns a server error when authentication dependencies fail»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('returns a server error when authentication dependencies fail', async () => {
     const response = createResponse();
 

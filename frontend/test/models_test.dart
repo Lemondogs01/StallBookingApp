@@ -7,6 +7,7 @@ import 'package:mfu_market_app/models/user_model.dart';
 
 void main() {
   group('UserModel', () {
+    // กรณีนี้ทดสอบ «reads backend fields and does not add an email field»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('reads backend fields and does not add an email field', () {
       final user = UserModel.fromJson({
         'id': 7,
@@ -24,6 +25,7 @@ void main() {
       expect(user.toJson().containsKey('email'), isFalse);
     });
 
+    // กรณีนี้ทดสอบ «accepts camelCase fields and recognizes an administrator»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('accepts camelCase fields and recognizes an administrator', () {
       final user = UserModel.fromJson({
         'id': '9',
@@ -45,6 +47,7 @@ void main() {
   });
 
   group('StallModel', () {
+    // กรณีนี้ทดสอบ «parses an available stall and a numeric price»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('parses an available stall and a numeric price', () {
       final stall = StallModel.fromJson({
         'stall_id': 'A12',
@@ -59,6 +62,7 @@ void main() {
       expect(stall.categoryLabel, 'Food & Drinks');
     });
 
+    // กรณีนี้ทดสอบ «maps other category labels and handles missing or invalid fields»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'maps other category labels and handles missing or invalid fields',
       () {
@@ -82,6 +86,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «parses an approved stall booking audit record»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('parses an approved stall booking audit record', () {
       final stall = StallModel.fromJson({
         'id': 'A2',
@@ -112,6 +117,7 @@ void main() {
   });
 
   group('BookingModel and PaymentModel', () {
+    // กรณีนี้ทดสอบ «reads the current slip URL from a booking response»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('reads the current slip URL from a booking response', () {
       final booking = BookingModel.fromJson({
         'id': 9,
@@ -130,6 +136,7 @@ void main() {
       expect(booking.categoryLabel, 'Food & Drinks');
     });
 
+    // กรณีนี้ทดสอบ «supports alternate response keys and safe defaults»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('supports alternate response keys and safe defaults', () {
       final booking = BookingModel.fromJson({
         'id': 'not-a-number',
@@ -161,6 +168,7 @@ void main() {
       expect(booking.paidAmount, 275.5);
     });
 
+    // กรณีนี้ทดสอบ «uses the other booking category labels»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('uses the other booking category labels', () {
       expect(
         BookingModel.fromJson({'category': 'general'}).categoryLabel,
@@ -172,6 +180,7 @@ void main() {
       );
     });
 
+    // กรณีนี้ทดสอบ «parses a payment returned after upload»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('parses a payment returned after upload', () {
       final payment = PaymentModel.fromJson({
         'id': 31,
@@ -185,6 +194,7 @@ void main() {
       expect(payment.slipUrl, '/uploads/slips/new.png');
     });
 
+    // กรณีนี้ทดสอบ «handles camelCase payment keys and invalid numeric values»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('handles camelCase payment keys and invalid numeric values', () {
       final payment = PaymentModel.fromJson({
         'id': 'invalid',
@@ -203,6 +213,7 @@ void main() {
   });
 
   group('AdminAnalyticsModel', () {
+    // กรณีนี้ทดสอบ «parses revenue totals, category values, and date breakdowns»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('parses revenue totals, category values, and date breakdowns', () {
       final analytics = AdminAnalyticsModel.fromJson({
         'totalRevenue': '1200.50',
@@ -224,6 +235,7 @@ void main() {
       expect(analytics.monthlyBreakdown.single.revenue, 1200.5);
     });
 
+    // กรณีนี้ทดสอบ «centers the selected date and fills missing days in chronological order»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'centers the selected date and fills missing days in chronological order',
       () {
@@ -245,6 +257,7 @@ void main() {
       },
     );
 
+    // กรณีนี้ทดสอบ «keeps the selected date centered across a year boundary»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('keeps the selected date centered across a year boundary', () {
       final selectedDate = DateTime(2026, 1, 1);
       final analytics = AdminAnalyticsModel.fromJson({
@@ -277,6 +290,7 @@ void main() {
       expect(trend[6].revenue, 40);
     });
 
+    // กรณีนี้ทดสอบ «uses empty collections and safe numeric defaults for malformed data»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test(
       'uses empty collections and safe numeric defaults for malformed data',
       () {

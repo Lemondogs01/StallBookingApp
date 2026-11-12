@@ -5,6 +5,7 @@ const Stall = require('../../models/Stall');
 const { withOverrides } = require('../../test-support/controllerHarness');
 
 describe('Stall model', () => {
+  // กรณีนี้ทดสอบ «lists stalls and finds a stall by ID»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('lists stalls and finds a stall by ID', async () => {
     const calls = [];
     const rows = [{ id: 'A1', price: 250 }];
@@ -24,6 +25,7 @@ describe('Stall model', () => {
     assert.deepEqual(calls[1].params, ['A1']);
   });
 
+  // กรณีนี้ทดสอบ «maps booking details for available, pending, and approved stalls»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
   it('maps booking details for available, pending, and approved stalls', async () => {
     const rows = [
       { stall_id: 'A1', category: 'food', price: '250.00', booking_id: null },

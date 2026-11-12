@@ -9,6 +9,7 @@ import 'controller_test_support.dart';
 
 void main() {
   group('ProfileController', () {
+    // กรณีนี้ทดสอบ «loads the current profile»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('loads the current profile', () async {
       final api = testApi((_) async => testJsonResponse(testUser()));
       addTearDown(api.close);
@@ -22,6 +23,7 @@ void main() {
       expect(controller.isLoading, isFalse);
     });
 
+    // กรณีนี้ทดสอบ «shows an API error when loading the profile fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('shows an API error when loading the profile fails', () async {
       final api = testApi(
         (_) async => testJsonResponse({'message': 'Sign in again.'}, 401),
@@ -36,6 +38,7 @@ void main() {
       expect(controller.errorMessage, 'Sign in again.');
     });
 
+    // กรณีนี้ทดสอบ «keeps profile state and resets loading after a save error»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('keeps profile state and resets loading after a save error', () async {
       final api = testApi(
         (_) async => testJsonResponse({'message': 'Phone already used.'}, 409),
@@ -57,6 +60,7 @@ void main() {
   });
 
   group('PaymentController', () {
+    // กรณีนี้ทดสอบ «submits a slip and returns the parsed payment»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('submits a slip and returns the parsed payment', () async {
       final api = testApi((request) async {
         expect(request.method, 'POST');
@@ -88,6 +92,7 @@ void main() {
       expect(controller.errorMessage, isNull);
     });
 
+    // กรณีนี้ทดสอบ «reports a missing payment record and API errors»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('reports a missing payment record and API errors', () async {
       final api = testApi((_) async => testJsonResponse({}));
       addTearDown(api.close);
@@ -107,6 +112,7 @@ void main() {
       expect(controller.isSubmitting, isFalse);
     });
 
+    // กรณีนี้ทดสอบ «shows the server message when slip submission is rejected»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('shows the server message when slip submission is rejected', () async {
       final api = testApi(
         (_) async => testJsonResponse({
@@ -131,6 +137,7 @@ void main() {
       expect(controller.isSubmitting, isFalse);
     });
 
+    // กรณีนี้ทดสอบ «replaces a slip at the booking history endpoint»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('replaces a slip at the booking history endpoint', () async {
       final api = testApi((request) async {
         expect(request.method, 'PUT');
@@ -151,6 +158,7 @@ void main() {
       expect(controller.errorMessage, isNull);
     });
 
+    // กรณีนี้ทดสอบ «keeps the server error when slip replacement fails»: ดูข้อมูลจำลองที่เตรียมไว้ในตัวกรณี และตรวจ assertions ด้านล่างเพื่อยืนยันผลลัพธ์หรือข้อผิดพลาดที่คาดหวัง
     test('keeps the server error when slip replacement fails', () async {
       final api = testApi(
         (_) async => testJsonResponse({
