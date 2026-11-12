@@ -30,6 +30,7 @@ class _BookingHistoryScreenState extends State<BookingHistoryScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Cancel Booking?'),
+        backgroundColor: Colors.white,
         content: Text(
           booking.slipUrl != null
               ? 'A payment slip was submitted for stall ${booking.stallId}. Cancel this pending booking? Cancellation does not automatically refund your payment. Contact the market administrator about a refund.'

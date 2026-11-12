@@ -152,14 +152,25 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () => showDialog<void>(
                             context: context,
                             builder: (context) => AlertDialog(
-                              icon: const Icon(Icons.support_agent),
-                              title: const Text('Forgot your password?'),
+                              backgroundColor: Colors.white,
+                              icon: const Icon(
+                                Icons.support_agent,
+                                color: AppTheme.green,
+                              ),
+                              title: const Text(
+                                'Forgot your password?',
+                                style: TextStyle(color: Colors.black),
+                              ),
                               content: const Text(
-                                'Contact the market administrator to reset your password.',
+                                'Contact the market administrator to reset your password.\n(admin@example.com or 555-123-4567)',
+                                style: TextStyle(color: Colors.black54),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: AppTheme.green,
+                                  ),
                                   child: const Text('Got it'),
                                 ),
                               ],
