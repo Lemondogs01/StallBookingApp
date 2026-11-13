@@ -105,7 +105,7 @@ void main() {
           if (request.method == 'POST') return testJsonResponse({});
           if (request.url.path.endsWith('/cancel')) {
             return testJsonResponse({
-              'message': 'Payment is already submitted.',
+              'message': 'Only pending bookings can be cancelled.',
             }, 409);
           }
           return _dashboardResponse(request);
@@ -132,7 +132,7 @@ void main() {
           controller.cancelBooking(booking),
           throwsA(isA<ApiException>()),
         );
-        expect(controller.errorMessage, 'Payment is already submitted.');
+        expect(controller.errorMessage, 'Only pending bookings can be cancelled.');
       },
     );
 
