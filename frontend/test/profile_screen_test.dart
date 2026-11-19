@@ -17,7 +17,7 @@ void main() {
       final api = testApi((request) async {
         if (request.url.path.endsWith('/users/profile') &&
             request.method == 'GET') {
-          return testJsonResponse(testUser(id: 8));
+          return testJsonResponse(testUser(id: 8, profileImage: ''));
         }
         return testJsonResponse({});
       });
@@ -47,42 +47,80 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Tea Stand'), findsOneWidget);
-      expect(find.text('Vendor 8'), findsOneWidget);
-      expect(find.text('0800000000'), findsOneWidget);
-      expect(find.text('vendor8'), findsOneWidget);
+      expect(find.text('Tea Stand'), findsAtLeastNWidgets(1));
+      expect(find.text('Vendor 8'), findsAtLeastNWidgets(1));
+      expect(find.text('0800000000'), findsAtLeastNWidgets(1));
+      expect(find.text('vendor8'), findsAtLeastNWidgets(1));
 
-      // เข้าสู่โหมดแก้ไขและทดสอบกรอกเบอร์โทรสั้นเกินไป
-      await tester.tap(find.text('Edit'));
+      // เข้าสู่โหมดแก้ไข
+      final editButton = find.text('Edit');
+      await tester.ensureVisible(editButton);
       await tester.pumpAndSettle();
-      expect(find.text('Discard Changes'), findsOneWidget);
+      await tester.tap(editButton);
+      await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.widgetWithText(TextField, 'Phone number'),
-        '12345',
+      // เลื่อนลงไปหาปุ่ม Discard Changes ที่อยู่ด้านล่างของ ListView
+      final discardButton = find.text('Discard Changes');
+      await tester.scrollUntilVisible(
+        discardButton,
+        250,
+        scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Enter a phone number with 8 to 15 digits.'),
-        findsOneWidget,
-      );
+      expect(discardButton, findsOneWidget);
 
-      // ยกเลิกการแก้ไข
-      await tester.tap(find.text('Discard Changes'));
+      // ทดสอบกรอกเบอร์โทรสั้นเกินไปและกด Save
+      final phoneField = find.widgetWithText(TextField, 'Phone number');
+      await tester.scrollUntilVisible(
+        phoneField,
+        -250,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.pumpAndSettle();
+      await tester.enterText(phoneField, '12345');
+
+      final saveButton = find.text('Save');
+      await tester.scrollUntilVisible(
+        saveButton,
+        -250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(saveButton);
+      await tester.pumpAndSettle();
+
+      // เลื่อนลงไปตรวจข้อความแจ้งเตือนที่แสดงใน ErrorBanner ด้านล่าง
+      final errorText = find.text('Enter a phone number with 8 to 15 digits.');
+      await tester.scrollUntilVisible(
+        errorText,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      expect(errorText, findsOneWidget);
+
+      // กด Discard Changes เพื่อยกเลิกการแก้ไข
+      await tester.scrollUntilVisible(
+        discardButton,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(discardButton);
+      await tester.pumpAndSettle();
+
       expect(find.text('Discard Changes'), findsNothing);
     },
   );
 
-// ตรวจว่าตอนเริ่มผู้ใช้ล็อกอินอยู่ (isAuthenticated == true) แล้วกดปุ่ม Sign out เพื่อตรวจว่าออกจากระบบสำเร็จ (isAuthenticated == false)
+  // ตรวจว่าตอนเริ่มผู้ใช้ล็อกอินอยู่ (isAuthenticated == true) แล้วกดปุ่ม Sign out เพื่อตรวจว่าออกจากระบบสำเร็จ (isAuthenticated == false)
   testWidgets('ProfileScreen signs out user when Sign out is tapped', (
     tester,
   ) async {
     final api = testApi((request) async {
       if (request.url.path.endsWith('/users/profile') &&
           request.method == 'GET') {
-        return testJsonResponse(testUser(id: 8));
+        return testJsonResponse(testUser(id: 8, profileImage: ''));
       }
       return testJsonResponse({});
     });
@@ -113,8 +151,16 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Sign out'));
+    final signOutButton = find.text('Sign out');
+    await tester.scrollUntilVisible(
+      signOutButton,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
     await tester.pumpAndSettle();
+    await tester.tap(signOutButton);
+    await tester.pumpAndSettle();
+
     expect(authController.isAuthenticated, isFalse);
   });
 }

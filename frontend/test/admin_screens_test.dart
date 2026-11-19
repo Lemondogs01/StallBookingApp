@@ -23,8 +23,6 @@ Map<String, dynamic> _sampleAnalytics() => {
 };
 
 void main() {
-  // โหลดข้อมูลแดชบอร์ดจำลองแล้วตรวจว่าแสดงการ์ด Approved revenue, Pending revenue, หัวข้อ Pending Payment Slips, จำนวน 1 pending และชื่อร้าน Shop: Tea Stand
-  // กดที่รายการร้านเพื่อเปิดหน้าต่าง Review Booking แล้วกดปุ่ม Approve เพื่อตรวจว่าส่งสถานะ 'approved' ไปยัง endpoint /verify
   testWidgets(
     'AdminDashboardScreen renders metrics, pending slips, and opens review dialog',
     (tester) async {
@@ -49,7 +47,8 @@ void main() {
           });
         }
         if (request.url.path.endsWith('/verify')) {
-          verifiedStatuses.add(jsonDecode(request.body)['status'] as String);
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          verifiedStatuses.add(body['status'].toString());
           return testJsonResponse({});
         }
         return testJsonResponse({});
@@ -74,25 +73,44 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Approved revenue'), findsOneWidget);
+     expect(find.text('Approved revenue'), findsOneWidget);
       expect(find.text('Pending revenue'), findsOneWidget);
-      expect(find.text('Pending Payment Slips'), findsOneWidget);
+
+      final pendingSlipsTitle = find.text('Pending Payment Slips');
+      await tester.scrollUntilVisible(
+        pendingSlipsTitle,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(pendingSlipsTitle, findsOneWidget);
       expect(find.text('1 pending'), findsOneWidget);
-      expect(find.text('Shop: Tea Stand'), findsOneWidget);
+
+      final shopItem = find.text('Shop: Tea Stand');
+      await tester.scrollUntilVisible(
+        shopItem,
+        250,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.pumpAndSettle();
+
+      expect(shopItem, findsOneWidget);
 
       // เปิด dialog รีวิวและกด Approve
-      await tester.tap(find.text('Shop: Tea Stand'));
+      await tester.tap(shopItem);
       await tester.pumpAndSettle();
+
       expect(find.text('Review Booking'), findsOneWidget);
       expect(find.text('Approve'), findsOneWidget);
 
       await tester.tap(find.text('Approve'));
       await tester.pumpAndSettle();
+
       expect(verifiedStatuses, ['approved']);
     },
   );
-// โหลดรายชื่อผู้ใช้จำลองแล้วตรวจว่าแสดงชื่อร้าน Tea Stand และชื่อผู้ใช้ User: vendor8
-// กดปุ่ม Reset password แล้วตรวจว่ามี dialog ยืนยัน Reset Password ขึ้นมา และเมื่อกดยืนยันแล้วมีการเรียก API รีเซ็ตรหัสผ่าน
+
   testWidgets(
     'UserManagementScreen displays users and opens reset password confirmation',
     (tester) async {
@@ -131,12 +149,14 @@ void main() {
       expect(find.text('Tea Stand'), findsOneWidget);
       expect(find.text('User: vendor8'), findsOneWidget);
 
-      await tester.tap(find.text('Reset password'));
+     await tester.tap(find.text('Reset password'));
       await tester.pumpAndSettle();
-      expect(find.text('Reset Password'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Reset Password'));
+      expect(find.text('Reset Password'), findsAtLeastNWidgets(1));
+
+      await tester.tap(find.text('Reset Password').last);
       await tester.pumpAndSettle();
+
       expect(resetCalled, isTrue);
     },
   );

@@ -63,4 +63,6 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData? get lightTheme => null;
 }

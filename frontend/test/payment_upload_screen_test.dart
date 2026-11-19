@@ -47,9 +47,13 @@ void main() {
 
       expect(find.text('Pay for Your Stall'), findsOneWidget);
       expect(find.text('฿250'), findsOneWidget);
-      expect(find.text('Book Stall and Submit Slip'), findsOneWidget);
 
-      await tester.tap(find.text('Book Stall and Submit Slip'));
+      final submitButton = find.text('Book Stall and Submit Slip');
+      expect(submitButton, findsOneWidget);
+
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+      await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
       expect(
@@ -59,8 +63,8 @@ void main() {
     },
   );
 
-// เปิดหน้าต่างโดยส่ง existingBooking ที่มีสลิปอยู่แล้วเข้าไป เพื่อตรวจว่าหัวข้อและปุ่มเปลี่ยนเป็นโหมดแทนที่สลิป 
-// (Edit Payment Slip, Choose Replacement Slip, Replace Payment Slip) และแสดงข้อความ Current payment slip
+  // เปิดหน้าต่างโดยส่ง existingBooking ที่มีสลิปอยู่แล้วเข้าไป เพื่อตรวจว่าหัวข้อและปุ่มเปลี่ยนเป็นโหมดแทนที่สลิป
+  // (Edit Payment Slip, Choose Replacement Slip, Replace Payment Slip) และแสดงข้อความ Current payment slip
   testWidgets(
     'PaymentUploadScreen displays replace-slip labels when editing an existing slip',
     (tester) async {

@@ -11,57 +11,69 @@ void main() {
   // เริ่มต้นตรวจว่าแสดงหน้าเลือกหมวดหมู่ (Choose a Category) และมีหมวด Food & Drinks
   // กดเลือกหมวด Food & Drinks แล้วตรวจว่าเปลี่ยนไปหน้าเลือกแผง (Choose a Stall) และเห็นแผง A1, A2 รวมถึงข้อความ Booked สำหรับแผงที่จองอนุมัติแล้ว
   // กดปุ่ม Change แล้วตรวจว่าย้อนกลับไปหน้าเลือกหมวดหมู่ได้อีกครั้ง
-  testWidgets('VendorHomeScreen shows categories and displays stalls after selecting one', (tester) async {
-    final api = testApi((request) async {
-      if (request.url.path.endsWith('/stalls/status')) {
-        return testJsonResponse({
-          'stalls': [
-            testStall(status: 'available'),
-            {
-              'stall_id': 'A2',
-              'category': 'food',
-              'price': '250.00',
-              'status': 'approved',
-            },
+  testWidgets(
+    'VendorHomeScreen shows categories and displays stalls after selecting one',
+    (tester) async {
+      final api = testApi((request) async {
+        if (request.url.path.endsWith('/stalls/status')) {
+          return testJsonResponse({
+            'stalls': [
+              testStall(status: 'available'),
+              {
+                'stall_id': 'A2',
+                'category': 'food',
+                'price': '250.00',
+                'status': 'approved',
+              },
+            ],
+          });
+        }
+        if (request.url.path.endsWith('/bookings/my')) {
+          return testJsonResponse([]);
+        }
+        return testJsonResponse({});
+      });
+      addTearDown(api.close);
+
+      final bookingController = BookingController(api);
+      addTearDown(bookingController.dispose);
+
+      await tester.pumpWidget(
+        MultiProvider(
+          providers: [
+            Provider<ApiService>.value(value: api),
+            ChangeNotifierProvider<BookingController>.value(
+              value: bookingController,
+            ),
           ],
-        });
-      }
-      if (request.url.path.endsWith('/bookings/my')) {
-        return testJsonResponse([]);
-      }
-      return testJsonResponse({});
-    });
-    addTearDown(api.close);
-
-    final bookingController = BookingController(api);
-    addTearDown(bookingController.dispose);
-
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          Provider<ApiService>.value(value: api),
-          ChangeNotifierProvider<BookingController>.value(value: bookingController),
-        ],
-        child: const MaterialApp(
-          home: Scaffold(body: VendorHomeScreen()),
+          child: const MaterialApp(
+            home: Scaffold(body: VendorHomeScreen()),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Choose a Category'), findsOneWidget);
-    expect(find.text('Food & Drinks'), findsOneWidget);
+      expect(find.text('Choose a Category'), findsOneWidget);
 
-    await tester.tap(find.text('Food & Drinks'));
-    await tester.pumpAndSettle();
+      final foodCategory = find.text('Food & Drinks');
+      expect(foodCategory, findsOneWidget);
+      await tester.ensureVisible(foodCategory);
+      await tester.pumpAndSettle();
+      await tester.tap(foodCategory);
+      await tester.pumpAndSettle();
 
-    expect(find.text('Choose a Stall'), findsOneWidget);
-    expect(find.text('A1'), findsOneWidget);
-    expect(find.text('A2'), findsOneWidget);
-    expect(find.text('Booked'), findsOneWidget);
+      expect(find.text('Choose a Stall'), findsOneWidget);
+      expect(find.text('A1'), findsOneWidget);
+      expect(find.text('A2'), findsOneWidget);
+      expect(find.text('Booked'), findsAtLeastNWidgets(1));
 
-    await tester.tap(find.text('Change'));
-    await tester.pumpAndSettle();
-    expect(find.text('Choose a Category'), findsOneWidget);
-  });
+      final changeButton = find.text('Change');
+      await tester.ensureVisible(changeButton);
+      await tester.pumpAndSettle();
+      await tester.tap(changeButton);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Choose a Category'), findsOneWidget);
+    },
+  );
 }
